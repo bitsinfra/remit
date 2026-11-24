@@ -1,0 +1,22 @@
+{
+  "name": "remit-holder-cloudflare",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Remit Holder on Cloudflare Workers: D1 read plane, Dynamic Worker kernels with no outbound network",
+  "scripts": {
+    "build": "esbuild src/worker.ts --bundle --format=esm --outfile=dist/worker.js --external:./remit_verify_wasm_bg.wasm --external:cloudflare:workers && node -e \"require('node:fs').copyFileSync('../../sdk/ts/wasm/web/remit_verify_wasm_bg.wasm', 'dist/remit_verify_wasm_bg.wasm')\"",
+    "test": "node --test --test-force-exit --test-timeout=60000 test/*.test.ts",
+    "check:package": "wrangler deploy --dry-run",
+    "pretest": "npm run build"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0",
+    "miniflare": "^4.20260730.0",
+    "wrangler": "^4.167.0"
+  },
+  "overrides": {
+    "sharp": "^0.35.5",
+    "undici": "^7.30.1"
+  }
+}

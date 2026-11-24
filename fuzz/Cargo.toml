@@ -1,0 +1,118 @@
+[package]
+name = "remit-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2021"
+
+[package.metadata]
+cargo-fuzz = true
+
+[workspace]
+
+[dependencies]
+libfuzzer-sys = "0.4"
+serde_json = "1"
+remit-types = { path = "../crates/remit-types" }
+remit-wire = { path = "../crates/remit-wire", features = ["crypto"] }
+remit-sql = { path = "../crates/remit-sql" }
+remit-emit = { path = "../crates/remit-emit" }
+remit-analyze = { path = "../crates/remit-analyze" }
+remit-policy = { path = "../crates/remit-policy" }
+remit-receipt = { path = "../crates/remit-receipt" }
+remit-kernel = { path = "../crates/remit-kernel" }
+remit-holder = { path = "../crates/remit-holder" }
+biscuit-auth = "=7.0.0-alpha.4"
+base64 = "0.22"
+wasm-smith = "0.248"
+wasm-encoder = "0.248"
+wasmtime = { version = "=48.0.10", default-features = false, features = ["component-model", "cranelift", "runtime", "std"] }
+
+[[bin]]
+name = "manifest_decode"
+path = "fuzz_targets/manifest_decode.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "rt_parse_validate"
+path = "fuzz_targets/rt_parse_validate.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "sql_profile"
+path = "fuzz_targets/sql_profile.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "jcs"
+path = "fuzz_targets/jcs.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "kernel_output"
+path = "fuzz_targets/kernel_output.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "envelope_open"
+path = "fuzz_targets/envelope_open.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "js_check"
+path = "fuzz_targets/js_check.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "biscuit_authority"
+path = "fuzz_targets/biscuit_authority.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "cedar_policy"
+path = "fuzz_targets/cedar_policy.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "http_signature"
+path = "fuzz_targets/http_signature.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "sql_bind"
+path = "fuzz_targets/sql_bind.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "attestation"
+path = "fuzz_targets/attestation.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "grpc_messages"
+path = "fuzz_targets/grpc_messages.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "wasm_smith_kernel"
+path = "fuzz_targets/wasm_smith_kernel.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "capacity_soundness"
+path = "fuzz_targets/capacity_soundness.rs"
+test = false
+doc = false

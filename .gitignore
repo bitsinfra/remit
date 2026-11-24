@@ -1,0 +1,53 @@
+# Rust build output
+/target
+/engines/*/target
+/crates/remit-py/target
+/crates/remit-kernel/tests/fixtures/*/target
+/fuzz/target
+/fuzz/corpus
+/fuzz/artifacts
+/fuzz/coverage
+
+# Built engine components (scripts/build-engine.sh) and Wasm verifier (scripts/build-verifier.sh)
+/engines/*/dist/
+/sdk/ts/wasm/
+
+# JavaScript
+node_modules/
+/sdk/ts/dist/
+/sdk/ts/skill/
+/backends/cloudflare/dist/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+/sdk/python/build/
+/sdk/python/dist/
+.venv/
+
+# Holder state and pulled catalogs
+.remit-holder/
+.remit/
+.remit.conformance.toml
+
+# Benchmarks and release outputs
+remitbench-spend.jsonl
+*.cdx.json
+
+# OS and editors
+.DS_Store
+.idea/
+.vscode/
+
+.wrangler/
+.vercel/
+/crates/remit-py/dist/
+
+# Documentation build
+/docs/.next/
+/docs/.source/
+/docs/.content/
+/docs/out/
+/docs/next-env.d.ts
+/docs/*.tsbuildinfo

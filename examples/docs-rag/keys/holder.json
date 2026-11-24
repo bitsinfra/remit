@@ -1,0 +1,6 @@
+{
+  "id": "did:web:docs.corp.example",
+  "key_id": "did:web:docs.corp.example#z6Mkjqbc8PmcTYREjeQKkn5TUhP6FyJ1AJhkLSqyrNu6e8mC",
+  "secret_key": "aY5oobxt9SVxd53jbCcbFU6+w7ylgOWZo2ESpS7UD70=",
+  "public_key": "did:key:z6Mkjqbc8PmcTYREjeQKkn5TUhP6FyJ1AJhkLSqyrNu6e8mC"
+}

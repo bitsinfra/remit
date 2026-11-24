@@ -1,0 +1,37 @@
+[package]
+name = "remit-wire"
+description = "Remit wire format: manifest, JCS (RFC 8785) canonicalization, DSSE envelopes, identities"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+homepage.workspace = true
+readme = "README.md"
+keywords = ["remit", "jcs", "dsse", "did", "signatures"]
+categories = ["cryptography", "encoding"]
+
+[dependencies]
+remit-types = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+sha2 = { workspace = true }
+hex = { workspace = true }
+base64 = { workspace = true }
+ed25519-dalek = { workspace = true, optional = true }
+p256 = { workspace = true, optional = true }
+rand = { workspace = true, optional = true }
+bs58 = { workspace = true, optional = true }
+ryu-js = { workspace = true }
+chrono = { workspace = true }
+
+[features]
+default = ["crypto"]
+crypto = ["dep:ed25519-dalek", "dep:p256", "dep:rand", "dep:bs58"]
+
+[dev-dependencies]
+proptest = { workspace = true }
+
+[lints]
+workspace = true

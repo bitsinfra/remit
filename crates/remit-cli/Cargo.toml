@@ -1,0 +1,56 @@
+[package]
+name = "bitsinfra-remit"
+description = "The `remit` command: serve, check, run, pull, dev, bench, policy lint/diff, receipts verify"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+homepage.workspace = true
+readme = "README.md"
+keywords = ["remit", "agents", "mcp", "cli"]
+categories = ["command-line-utilities"]
+
+[[bin]]
+name = "remit"
+path = "src/main.rs"
+
+[features]
+default = []
+duckdb = ["remit-holder/duckdb"]
+mysql = ["remit-holder/mysql"]
+object-store = ["remit-holder/object-store"]
+tantivy = ["remit-holder/tantivy"]
+lance = ["remit-holder/lance"]
+
+[dependencies]
+remit-types = { workspace = true }
+remit-wire = { workspace = true, features = ["crypto"] }
+remit-sql = { workspace = true }
+remit-analyze = { workspace = true }
+remit-policy = { workspace = true }
+remit-read = { workspace = true }
+remit-kernel = { workspace = true }
+remit-emit = { workspace = true }
+remit-receipt = { workspace = true }
+remit-holder = { workspace = true }
+datafusion = { workspace = true }
+biscuit-auth = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+anyhow = { workspace = true }
+tokio = { workspace = true }
+clap = { workspace = true }
+reqwest = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+chrono = { workspace = true }
+rand = { workspace = true }
+base64 = { workspace = true }
+axum = { workspace = true }
+
+[dev-dependencies]
+libc = "0.2"
+
+[lints]
+workspace = true

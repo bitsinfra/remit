@@ -1,0 +1,82 @@
+// Remit v1 service (Connect / gRPC). The HTTP API in protocol.md is the
+// canonical binding; this schema is the same surface for RPC stacks.
+// Reference Holder: POST /remit.v1.RemitService/<Method> as Connect unary
+// (application/json, application/proto) or gRPC over HTTP/2
+// (application/grpc+proto).
+syntax = "proto3";
+
+package remit.v1;
+
+import "google/protobuf/struct.proto";
+
+option go_package = "github.com/bitsinfra/remit/sdk/go/remitv1";
+
+// DSSE envelope carrying the JCS-canonical manifest.
+message Envelope {
+  string payload_type = 1 [json_name = "payloadType"];
+  string payload = 2;           // base64
+  repeated Signature signatures = 3;
+}
+
+message Signature {
+  string keyid = 1;
+  string sig = 2;               // base64 Ed25519 or ES256
+}
+
+message Diagnostic {
+  string code = 1;
+  string path = 2;
+  repeated uint64 span = 3;     // [line, column]
+  string message = 4;
+  string hint = 5;
+  string docs = 6;
+  google.protobuf.ListValue fix = 7;  // RFC 6902 patch
+}
+
+message CheckRequest { Envelope envelope = 1; }
+message CheckResponse {
+  string decision = 1;          // admitted | rejected | pending_approval | counter_offer | busy
+  string remit_id = 2;
+  repeated Diagnostic diagnostics = 3;
+  google.protobuf.Struct facts = 4;
+  google.protobuf.Struct access_card = 5;
+  google.protobuf.Struct counter_offer = 6;
+  google.protobuf.Struct cost = 7;
+  google.protobuf.ListValue trace = 8;
+  string ticket = 9;
+}
+
+message RunRequest { Envelope envelope = 1; bool async = 2; }
+message RunResponse {
+  string run_id = 1;
+  string status = 2;            // ok | limit_exceeded | type_violation | denied | internal
+  google.protobuf.Value result = 3;
+  repeated string labels = 4;
+  google.protobuf.Struct terms = 5;
+  google.protobuf.Struct provenance = 6;
+  Envelope receipt = 7;
+  map<string, string> usage = 8;
+  bool cached = 9;
+  // Present when the remit did not run.
+  string decision = 10;
+  repeated Diagnostic diagnostics = 11;
+  google.protobuf.Struct counter_offer = 12;
+  string ticket = 13;
+}
+
+message GetRunRequest { string run_id = 1; }
+message GetCatalogRequest {}
+message GetReceiptRequest { string run_id = 1; }
+message PutBlobRequest { string sha256 = 1; string source = 2; }
+message PutBlobResponse { string sha256 = 1; }
+message GetLogProofRequest { string run_id = 1; }
+
+service RemitService {
+  rpc GetCatalog(GetCatalogRequest) returns (google.protobuf.Struct);
+  rpc Check(CheckRequest) returns (CheckResponse);
+  rpc Run(RunRequest) returns (RunResponse);
+  rpc GetRun(GetRunRequest) returns (google.protobuf.Struct);
+  rpc GetReceipt(GetReceiptRequest) returns (Envelope);
+  rpc PutBlob(PutBlobRequest) returns (PutBlobResponse);
+  rpc GetLogProof(GetLogProofRequest) returns (google.protobuf.Struct);
+}

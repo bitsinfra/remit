@@ -1,0 +1,43 @@
+{
+  "accept": [
+    "SELECT start_at, end_at FROM calendar.events WHERE start_at < $until AND end_at > $from AND status <> 'cancelled'",
+    "WITH r AS (SELECT region, arr FROM crm.accounts) SELECT region, SUM(arr) FROM r GROUP BY region HAVING COUNT(*) > 5",
+    "SELECT a.region, COUNT(*) FROM crm.accounts a LEFT JOIN crm.deals d ON a.account_id = d.account_id GROUP BY 1 ORDER BY 2 DESC LIMIT 5",
+    "SELECT date_trunc('week', start_at) AS w, COUNT(*) FROM calendar.events GROUP BY 1",
+    "SELECT region, row_number() OVER (ORDER BY arr DESC) FROM crm.accounts"
+  ],
+  "reject": [
+    {
+      "sql": "DELETE FROM crm.accounts",
+      "code": "RMT-E0202"
+    },
+    {
+      "sql": "WITH RECURSIVE t(n) AS (SELECT 1 UNION ALL SELECT n+1 FROM t) SELECT * FROM t",
+      "code": "RMT-E0203"
+    },
+    {
+      "sql": "SELECT a FROM x.t UNION SELECT a FROM x.u",
+      "code": "RMT-E0204"
+    },
+    {
+      "sql": "SELECT * FROM calendar.events WHERE start_at < now()",
+      "code": "RMT-E0205"
+    },
+    {
+      "sql": "SELECT random()",
+      "code": "RMT-E0205"
+    },
+    {
+      "sql": "SELECT * FROM a.b FULL OUTER JOIN a.c ON true",
+      "code": "RMT-E0206"
+    },
+    {
+      "sql": "SELECT * FROM a.b FOR UPDATE",
+      "code": "RMT-E0207"
+    },
+    {
+      "sql": "SELECT * FROM a.b WHERE x = $1",
+      "code": "RMT-E0208"
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+# Alice's personal data vault. Third-party agents learn "3 free slots",
+# never the calendar.
+
+[holder]
+id = "did:web:alice.vault.example"
+listen = "127.0.0.1:8443"
+isolation = "process"                    # inprocess | process
+identity = "keys/holder.json"            # demo key — generate your own with `remit keygen`
+data_dir = ".remit-holder"
+admin_token = "env:REMIT_ADMIN_TOKEN"
+
+[[source]]
+name = "calendar"
+kind = "csv"
+path = "data/events.csv"
+table = "events"
+
+[[source]]
+name = "health"
+kind = "sqlite"
+path = "data/health.sqlite"
+
+[catalog."calendar.events"]
+description = "Alice's calendar. Only busy intervals are visible."
+labels = ["personal", "no-forward"]
+sensitivity = "high"
+purposes = ["scheduling"]
+max_bits = 128
+retain_days = 30
+pad_ms = 25
+
+[catalog."calendar.events".columns]
+start_at  = { type = "timestamp" }
+end_at    = { type = "timestamp" }
+status    = { enum = true }
+event_id  = { expose = false }
+title     = { expose = false }
+attendees = { expose = false }
+location  = { expose = false }
+
+[catalog."health.steps"]
+description = "Daily step counts and resting heart rate."
+labels = ["personal", "health", "no-forward"]
+sensitivity = "high"
+purposes = ["fitness-coaching"]
+aggregate_only = true
+k = 7                                    # aggregates must cover ≥ 7 days
+privacy_unit = "day"
+approval = "first-use"
+
+[catalog."health.steps".columns]
+day = { type = "date" }
+
+[catalog.profiles]
+enabled = true
+epsilon = 0.1
+
+[policy]
+presets = ["personal-vault"]
+files = ["policies/*.cedar"]
+
+[budgets]
+bits_per_principal_per_day = 4096
+bits_global_per_day = 65536
+
+[runtime]
+engine = "../../engines/js/dist/remit_engine_js.wasm"
+python_engine = "../../engines/python/dist/remit_engine_python.wasm"
+max_wall_ms = 2000
+
+[[principal]]
+id = "did:web:travel-agent.example"
+keys = ["did:key:z6MkrJ8EXRcfvCV1GnCUbQd1QEfp7TtQU4SsFiBKujXsn7Mo"]
+groups = ["verified-agents"]
+org = "travel-agent.example"
+verified = true
+
+[[example]]
+title = "Find three free 2-hour slots"
+file = "remits/free-slots.example.json"

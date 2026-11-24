@@ -1,0 +1,55 @@
+{
+  "remit": "0.1",
+  "purpose": "scheduling",
+  "mode": "kernel",
+  "reads": {
+    "busy": {
+      "sql": "SELECT start_at, end_at FROM calendar.events WHERE start_at < $until AND end_at > $from AND status <> 'cancelled'",
+      "params": {
+        "from": "timestamp",
+        "until": "timestamp"
+      },
+      "max_rows": 500,
+      "max_calls": 1
+    }
+  },
+  "code": {
+    "lang": "js/es2023",
+    "entry": "main",
+    "source": "// Find up to three free slots of `minutes` length between 09:00 and 18:00 UTC.\n// Build: `remit-ts build kernels/free-slots.ts` → free-slots.remit.json\n                                            \n                                                                             \n                                                           \n                                           \n\nexport const remit = {\n  purpose: \"scheduling\",\n  reads: {\n    busy: {\n      sql: \"SELECT start_at, end_at FROM calendar.events WHERE start_at < $until AND end_at > $from AND status <> 'cancelled'\",\n      params: { from: \"timestamp\", until: \"timestamp\" },\n      max_rows: 500,\n    },\n  },\n  limits: { wall: \"250ms\", memory: \"16MiB\", fuel: 50_000_000, output: \"1KiB\" },\n  returns: {\n    list: { max: 3, of: { struct: {\n      start: { timestamp: { min: \"$from\", max: \"$until\", granularity: \"15m\" } },\n      end: { timestamp: { min: \"$from\", max: \"$until\", granularity: \"15m\" } },\n    } } },\n  },\n};\n\nexport default function main({ busy }       , p        )         {\n  const H = 3_600_000, need = p.minutes * 60_000, step = 15 * 60_000;\n  const taken = busy(p).rows().map((r) => [+r.start_at, +r.end_at]).sort((a, b) => a[0] - b[0]);\n  const out         = [];\n  for (let day = +p.from; day < +p.until && out.length < 3; day += 24 * H) {\n    let t = day + 9 * H;\n    const close = day + 18 * H;\n    for (const [s, e] of taken) {\n      if (e <= t || s >= close) continue;\n      if (s - t >= need && out.length < 3) out.push({ start: new Date(t), end: new Date(t + need) });\n      t = Math.max(t, Math.ceil(e / step) * step);\n    }\n    if (out.length < 3 && close - t >= need) out.push({ start: new Date(t), end: new Date(t + need) });\n  }\n  return out;\n}\n"
+  },
+  "params": {
+    "from": "2026-11-24T00:00:00Z",
+    "until": "2026-12-08T00:00:00Z",
+    "minutes": 120
+  },
+  "limits": {
+    "fuel": 50000000,
+    "memory_bytes": 16777216,
+    "wall_ms": 250,
+    "output_bytes": 1024
+  },
+  "returns": {
+    "list": {
+      "max": 3,
+      "of": {
+        "struct": {
+          "start": {
+            "timestamp": {
+              "min": "$from",
+              "max": "$until",
+              "granularity": "15m"
+            }
+          },
+          "end": {
+            "timestamp": {
+              "min": "$from",
+              "max": "$until",
+              "granularity": "15m"
+            }
+          }
+        }
+      }
+    }
+  }
+}

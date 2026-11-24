@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/bitsinfra/remit/main/spec/schema/manifest.schema.json",
+  "title": "Remit manifest v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["remit", "sender", "holder", "issued_at", "expires_at", "nonce", "purpose", "mode", "reads", "returns"],
+  "properties": {
+    "remit": { "type": "string", "pattern": "^0\\.1(\\.\\d+)?$" },
+    "sender": { "type": "string", "pattern": "^did:|^spiffe:" },
+    "holder": { "type": "string" },
+    "issued_at": { "type": "string", "format": "date-time" },
+    "expires_at": { "type": "string", "format": "date-time" },
+    "nonce": { "type": "string", "minLength": 8, "maxLength": 128 },
+    "purpose": { "type": "string" },
+    "authority": { "type": "array", "items": { "type": "string" } },
+    "mode": { "enum": ["query", "kernel"] },
+    "reads": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "pattern": "^[A-Za-z_][A-Za-z0-9_]{0,63}$" },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["sql", "max_rows"],
+        "properties": {
+          "sql": { "type": "string", "maxLength": 16384 },
+          "params": { "type": "object", "additionalProperties": { "enum": ["timestamp", "date", "int", "float", "string", "bool"] } },
+          "max_rows": { "type": "integer", "minimum": 1 },
+          "max_calls": { "type": "integer", "minimum": 1, "default": 1 }
+        }
+      }
+    },
+    "code": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lang", "source_sha256"],
+      "properties": {
+        "lang": { "type": "string", "examples": ["js/es2023"] },
+        "entry": { "type": "string", "default": "main" },
+        "source_sha256": { "type": "string", "pattern": "^(sha256:)?[0-9a-fA-F]{64}$" },
+        "source": { "type": "string", "maxLength": 262144 }
+      }
+    },
+    "params": { "type": "object" },
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "fuel": { "type": "integer", "minimum": 0 },
+        "memory_bytes": { "type": "integer", "minimum": 0 },
+        "wall_ms": { "type": "integer", "minimum": 0 },
+        "scan_rows": { "type": "integer", "minimum": 0 },
+        "scan_bytes": { "type": "integer", "minimum": 0 },
+        "output_bytes": { "type": "integer", "minimum": 0 },
+        "epsilon": { "type": "number", "minimum": 0 },
+        "delta": { "type": "number", "minimum": 0 },
+        "bits": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "returns": { "$ref": "rt.schema.json" }
+  },
+  "allOf": [
+    { "if": { "properties": { "mode": { "const": "kernel" } } }, "then": { "required": ["code"] } },
+    { "if": { "properties": { "mode": { "const": "query" } } }, "then": { "not": { "required": ["code"] }, "properties": { "reads": { "maxProperties": 1 } } } }
+  ]
+}

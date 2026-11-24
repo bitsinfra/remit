@@ -1,0 +1,6 @@
+{
+  "id": "did:web:company-a.example",
+  "key_id": "did:web:company-a.example#z6Mkmk6gcYNuM58SLbQWca1dFaoN7WdVJtEfVeUvKJC7QtkM",
+  "secret_key": "zOYQxnugBSUrXXKDeIao7hbuIMn//uRaKhnb/fSAW4I=",
+  "public_key": "did:key:z6Mkmk6gcYNuM58SLbQWca1dFaoN7WdVJtEfVeUvKJC7QtkM"
+}

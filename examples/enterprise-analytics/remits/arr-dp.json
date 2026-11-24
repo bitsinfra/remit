@@ -1,0 +1,13 @@
+{
+  "remit": "0.1",
+  "purpose": "analytics",
+  "mode": "query",
+  "reads": { "q": { "sql": "SELECT segment, COUNT(*) AS accounts, SUM(arr) AS arr FROM finance.arr_dp GROUP BY segment", "max_rows": 10 } },
+  "params": {},
+  "limits": { "epsilon": 0.3 },
+  "returns": { "list": { "max": 10, "of": { "struct": {
+    "segment": { "enum": ["smb", "mid", "enterprise"] },
+    "accounts": { "int": { "min": 0, "max": 100000 } },
+    "arr": { "float": { "min": -1e10, "max": 1e10, "precision": 1000 } }
+  } } } }
+}

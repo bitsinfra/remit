@@ -1,0 +1,21 @@
+[package]
+name = "remit-guest"
+description = "PID 1 of a Remit kernel microVM: the kernel worker over one virtio serial port"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+homepage.workspace = true
+readme = "README.md"
+keywords = ["remit", "microvm", "kvm"]
+categories = ["virtualization"]
+
+[dependencies]
+remit-kernel = { workspace = true }
+anyhow = { workspace = true }
+serde_json = { workspace = true }
+libc = "0.2"
+
+[lints]
+workspace = true

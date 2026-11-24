@@ -1,0 +1,106 @@
+# Enterprise data agent: a finance agent asks the CRM Holder aggregate-only
+# questions. Moving rows is forbidden; questions keep coming.
+
+[holder]
+id = "did:web:hr-data.acme.example"
+listen = "127.0.0.1:8444"
+isolation = "process"
+identity = "keys/holder.json"            # demo key
+data_dir = ".remit-holder"
+admin_token = "env:REMIT_ADMIN_TOKEN"
+
+[[source]]
+name = "crm"
+kind = "csv"
+path = "data/accounts.csv"
+table = "accounts"
+
+[[source]]
+name = "crm"
+kind = "csv"
+path = "data/deals.csv"
+table = "deals"
+
+[[source]]
+name = "finance"
+kind = "csv"
+path = "data/accounts.csv"
+table = "arr_dp"
+
+[catalog."crm.accounts"]
+description = "Customer accounts. Aggregates only, groups of at least 20 accounts."
+labels = ["confidential"]
+aggregate_only = true
+k = 20
+privacy_unit = "account_id"
+operations = ["aggregate"]
+purposes = ["analytics", "forecasting"]
+max_bits = 4096
+
+[catalog."crm.accounts".columns]
+name        = { expose = false }
+owner_email = { mask = "hash" }
+region      = { enum = true }
+segment     = { enum = true }
+created_at  = { type = "timestamp" }
+
+[catalog."crm.deals"]
+description = "Deals per account. Aggregates only."
+labels = ["confidential"]
+aggregate_only = true
+k = 20
+privacy_unit = "account_id"
+operations = ["aggregate"]
+purposes = ["analytics", "forecasting"]
+max_bits = 4096
+
+[catalog."crm.deals".columns]
+stage     = { enum = true }
+closed_at = { type = "timestamp" }
+
+[catalog."finance.arr_dp"]
+description = "ARR under differential privacy (ε ≤ 1/day, ≤ 0.5 per remit). COUNT and SUM(arr) only."
+labels = ["confidential"]
+aggregate_only = true
+operations = ["aggregate"]
+purposes = ["analytics"]
+
+[catalog."finance.arr_dp".dp]
+epsilon_per_day = 1.0
+max_epsilon_per_remit = 0.5
+
+[catalog."finance.arr_dp".columns]
+arr         = { bounds = [0.0, 500000.0] }
+region      = { enum = true }
+segment     = { enum = true }
+name        = { expose = false }
+owner_email = { expose = false }
+account_id  = { expose = false }
+created_at  = { expose = false }
+
+[catalog.profiles]
+enabled = true
+epsilon = 0.1
+
+[policy]
+presets = []
+files = ["policies/*.cedar"]
+
+[budgets]
+bits_per_principal_per_day = 16384
+bits_global_per_day = 262144
+epsilon_per_principal_per_day = 1.0
+
+[runtime]
+engine = "../../engines/js/dist/remit_engine_js.wasm"
+
+[[principal]]
+id = "did:web:finance-agent.acme.example"
+keys = ["did:key:z6MkvEAATPLGbSDgqXwccC9PMc4JxrroQNJc4zTat1NEWqCo"]
+groups = ["partners", "verified-agents"]
+org = "acme"
+verified = true
+
+[[example]]
+title = "ARR by region"
+file = "remits/arr-by-region.json"

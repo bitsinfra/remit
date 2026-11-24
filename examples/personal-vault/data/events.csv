@@ -1,0 +1,55 @@
+event_id,start_at,end_at,status,title,attendees,location
+ev0001,2026-11-23T10:30:00Z,2026-11-23T11:30:00Z,confirmed,Board prep,dan@example.com;carol@example.com,Zoom
+ev0000,2026-11-23T12:30:00Z,2026-11-23T14:30:00Z,confirmed,School pickup,bob@example.com;erin@example.com,Home
+ev0004,2026-11-24T08:15:00Z,2026-11-24T09:00:00Z,cancelled,Board prep,carol@example.com;erin@example.com,Zoom
+ev0003,2026-11-24T10:00:00Z,2026-11-24T10:45:00Z,confirmed,School pickup,bob@example.com;carol@example.com,Clinic
+ev0002,2026-11-24T17:00:00Z,2026-11-24T17:45:00Z,confirmed,Dentist,erin@example.com;bob@example.com,Zoom
+ev0007,2026-11-25T09:45:00Z,2026-11-25T11:45:00Z,confirmed,Dentist,erin@example.com;bob@example.com,Clinic
+ev0006,2026-11-25T11:15:00Z,2026-11-25T12:45:00Z,confirmed,Lunch w/ Carol,erin@example.com;carol@example.com,Clinic
+ev0005,2026-11-25T14:45:00Z,2026-11-25T16:45:00Z,confirmed,Design review,dan@example.com;erin@example.com,Office
+ev0008,2026-11-26T12:00:00Z,2026-11-26T12:45:00Z,confirmed,Gym,dan@example.com;bob@example.com,Clinic
+ev0009,2026-11-26T13:45:00Z,2026-11-26T14:45:00Z,confirmed,1:1 with Bob,erin@example.com;dan@example.com,Home
+ev0010,2026-11-26T14:15:00Z,2026-11-26T16:15:00Z,confirmed,Lunch w/ Carol,carol@example.com;erin@example.com,Office
+ev0011,2026-11-27T09:45:00Z,2026-11-27T10:45:00Z,confirmed,Flight to Lisbon,bob@example.com;erin@example.com,Home
+ev0012,2026-11-27T10:45:00Z,2026-11-27T12:45:00Z,cancelled,Dentist,erin@example.com;dan@example.com,Clinic
+ev0013,2026-11-27T17:30:00Z,2026-11-27T18:30:00Z,confirmed,Flight to Lisbon,erin@example.com;bob@example.com,Office
+ev0016,2026-11-30T10:00:00Z,2026-11-30T12:00:00Z,confirmed,Lunch w/ Carol,dan@example.com;carol@example.com,Home
+ev0015,2026-11-30T14:15:00Z,2026-11-30T15:00:00Z,confirmed,Board prep,dan@example.com;carol@example.com,Zoom
+ev0014,2026-11-30T16:00:00Z,2026-11-30T16:45:00Z,confirmed,Gym,bob@example.com;erin@example.com,Home
+ev0018,2026-12-01T08:15:00Z,2026-12-01T09:00:00Z,confirmed,Gym,dan@example.com;carol@example.com,Home
+ev0020,2026-12-01T14:30:00Z,2026-12-01T16:30:00Z,confirmed,Design review,bob@example.com;dan@example.com,Zoom
+ev0017,2026-12-01T16:15:00Z,2026-12-01T17:00:00Z,confirmed,Design review,bob@example.com;dan@example.com,Home
+ev0019,2026-12-01T17:45:00Z,2026-12-01T18:45:00Z,confirmed,1:1 with Bob,carol@example.com;dan@example.com,Home
+ev0022,2026-12-02T15:00:00Z,2026-12-02T16:00:00Z,confirmed,School pickup,erin@example.com;dan@example.com,Office
+ev0021,2026-12-02T16:30:00Z,2026-12-02T17:30:00Z,confirmed,1:1 with Bob,bob@example.com;dan@example.com,Clinic
+ev0023,2026-12-03T13:15:00Z,2026-12-03T13:45:00Z,confirmed,Lunch w/ Carol,carol@example.com;bob@example.com,Clinic
+ev0024,2026-12-04T11:00:00Z,2026-12-04T12:30:00Z,confirmed,Dentist,dan@example.com;bob@example.com,Clinic
+ev0026,2026-12-04T11:45:00Z,2026-12-04T12:30:00Z,cancelled,School pickup,erin@example.com;carol@example.com,Clinic
+ev0025,2026-12-04T12:00:00Z,2026-12-04T13:00:00Z,confirmed,1:1 with Bob,dan@example.com;carol@example.com,Clinic
+ev0029,2026-12-07T10:00:00Z,2026-12-07T10:30:00Z,confirmed,Lunch w/ Carol,dan@example.com;erin@example.com,Home
+ev0028,2026-12-07T11:30:00Z,2026-12-07T13:00:00Z,confirmed,School pickup,bob@example.com;dan@example.com,Home
+ev0030,2026-12-07T12:30:00Z,2026-12-07T14:00:00Z,confirmed,Lunch w/ Carol,carol@example.com;bob@example.com,Office
+ev0027,2026-12-07T13:45:00Z,2026-12-07T14:30:00Z,confirmed,School pickup,dan@example.com;carol@example.com,Home
+ev0031,2026-12-08T10:00:00Z,2026-12-08T11:30:00Z,confirmed,School pickup,carol@example.com;erin@example.com,Zoom
+ev0033,2026-12-08T11:45:00Z,2026-12-08T12:15:00Z,confirmed,Board prep,dan@example.com;carol@example.com,Clinic
+ev0032,2026-12-08T13:15:00Z,2026-12-08T14:00:00Z,confirmed,Design review,dan@example.com;carol@example.com,Zoom
+ev0034,2026-12-08T16:15:00Z,2026-12-08T17:45:00Z,confirmed,1:1 with Bob,bob@example.com;dan@example.com,Clinic
+ev0036,2026-12-09T10:00:00Z,2026-12-09T10:30:00Z,confirmed,Lunch w/ Carol,erin@example.com;dan@example.com,Zoom
+ev0035,2026-12-09T10:30:00Z,2026-12-09T11:00:00Z,confirmed,Dentist,dan@example.com;bob@example.com,Clinic
+ev0037,2026-12-09T17:15:00Z,2026-12-09T18:00:00Z,confirmed,1:1 with Bob,dan@example.com;carol@example.com,Clinic
+ev0039,2026-12-10T08:30:00Z,2026-12-10T09:30:00Z,confirmed,Design review,carol@example.com;bob@example.com,Office
+ev0038,2026-12-10T15:30:00Z,2026-12-10T16:15:00Z,confirmed,Lunch w/ Carol,bob@example.com;erin@example.com,Home
+ev0041,2026-12-11T09:00:00Z,2026-12-11T10:00:00Z,confirmed,Flight to Lisbon,carol@example.com;dan@example.com,Office
+ev0040,2026-12-11T13:45:00Z,2026-12-11T14:15:00Z,confirmed,1:1 with Bob,erin@example.com;bob@example.com,Office
+ev0045,2026-12-14T11:45:00Z,2026-12-14T12:30:00Z,confirmed,Lunch w/ Carol,erin@example.com;dan@example.com,Office
+ev0044,2026-12-14T12:30:00Z,2026-12-14T14:00:00Z,confirmed,1:1 with Bob,erin@example.com;carol@example.com,Office
+ev0043,2026-12-14T15:45:00Z,2026-12-14T16:45:00Z,confirmed,Board prep,erin@example.com;carol@example.com,Clinic
+ev0042,2026-12-14T17:15:00Z,2026-12-14T19:15:00Z,confirmed,Dentist,bob@example.com;erin@example.com,Zoom
+ev0047,2026-12-15T11:15:00Z,2026-12-15T11:45:00Z,confirmed,Board prep,carol@example.com;bob@example.com,Office
+ev0046,2026-12-15T12:00:00Z,2026-12-15T13:00:00Z,cancelled,Design review,erin@example.com;dan@example.com,Zoom
+ev0048,2026-12-16T12:15:00Z,2026-12-16T12:45:00Z,confirmed,Board prep,bob@example.com;erin@example.com,Clinic
+ev0051,2026-12-17T10:00:00Z,2026-12-17T10:30:00Z,confirmed,Flight to Lisbon,carol@example.com;dan@example.com,Clinic
+ev0050,2026-12-17T12:00:00Z,2026-12-17T12:30:00Z,confirmed,Lunch w/ Carol,dan@example.com;erin@example.com,Office
+ev0049,2026-12-17T17:30:00Z,2026-12-17T19:00:00Z,confirmed,Design review,carol@example.com;dan@example.com,Office
+ev0053,2026-12-18T08:45:00Z,2026-12-18T09:45:00Z,confirmed,School pickup,carol@example.com;erin@example.com,Office
+ev0052,2026-12-18T11:00:00Z,2026-12-18T12:30:00Z,confirmed,1:1 with Bob,erin@example.com;carol@example.com,Office

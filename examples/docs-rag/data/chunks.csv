@@ -1,0 +1,13 @@
+chunk_id,doc,body,author_email,internal_notes
+c000,refunds,Annual plans can be refunded within 30 days of purchase.,writer6@corp.example,draft; do not share
+c001,refunds,Monthly plans are not refundable after the billing date.,writer3@corp.example,draft; do not share
+c002,refunds,Refund requests are processed within 5 business days.,writer7@corp.example,draft; do not share
+c003,shipping,Orders to the EU ship within 3 business days.,writer1@corp.example,draft; do not share
+c004,shipping,Express shipping is available in 12 countries.,writer2@corp.example,draft; do not share
+c005,shipping,Customs fees are paid by the recipient.,writer9@corp.example,draft; do not share
+c006,security,All data is encrypted at rest with AES-256.,writer2@corp.example,draft; do not share
+c007,security,SSO is available on the Enterprise plan.,writer6@corp.example,draft; do not share
+c008,security,Security incidents are disclosed within 72 hours.,writer1@corp.example,draft; do not share
+c009,billing,Invoices are issued on the first day of each month.,writer9@corp.example,draft; do not share
+c010,billing,VAT is charged according to the customer's country.,writer4@corp.example,draft; do not share
+c011,billing,Payment methods include card and bank transfer.,writer1@corp.example,draft; do not share

@@ -1,0 +1,10 @@
+{
+  // wrangler deploy (after `npm run build`); REMIT_KEY is a secret.
+  "name": "remit-holder",
+  "main": "dist/worker.js",
+  "compatibility_date": "2026-01-01",
+  "d1_databases": [{ "binding": "DB", "database_name": "remit", "database_id": "<your D1 id>" }],
+  "worker_loaders": [{ "binding": "LOADER" }],
+  "rules": [{ "type": "CompiledWasm", "globs": ["**/*.wasm"], "fallthrough": false }],
+  "vars": { "REMIT_CONFIG": "{}" }
+}

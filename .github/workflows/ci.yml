@@ -1,0 +1,187 @@
+name: ci
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  schedule: [{ cron: "17 3 * * *" }]
+
+permissions: { contents: read }
+
+jobs:
+  docs:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "24", cache: npm, cache-dependency-path: docs/package-lock.json }
+      - run: npm ci --prefix docs --no-audit --no-fund
+      - run: npm run build --prefix docs
+
+  rust:
+    strategy:
+      matrix:
+        os: [ubuntu-24.04, ubuntu-24.04-arm, macos-15]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with: { targets: "wasm32-wasip2,wasm32-unknown-unknown" }
+      - uses: Swatinem/rust-cache@v2
+      - name: Solver for policy proofs
+        run: (command -v apt-get && sudo apt-get install -y z3 protobuf-compiler) || brew install z3 protobuf
+      - name: Build engine components (Holder-trusted, pinned)
+        run: scripts/build-engine.sh all
+      - name: Test workspace (process isolation, escapes, adversarial kernels)
+        run: cargo test --workspace --locked
+      - name: Optional connectors
+        run: cargo test -p remit-read --features mysql,tantivy,lance,object-store --locked
+      - name: Black-box conformance
+        run: cargo build -p bitsinfra-remit --locked && scripts/conformance.sh
+
+  connectors:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:17
+        env: { POSTGRES_PASSWORD: remit }
+        ports: ["5432:5432"]
+        options: --health-cmd pg_isready --health-interval 5s --health-retries 20
+      mysql:
+        image: mysql:8.4
+        env: { MYSQL_ROOT_PASSWORD: remit, MYSQL_DATABASE: remit }
+        ports: ["3306:3306"]
+        options: --health-cmd "mysqladmin ping -premit" --health-interval 5s --health-retries 30
+    env:
+      REMIT_TEST_PG_DSN: postgres://postgres:remit@127.0.0.1/postgres
+      REMIT_TEST_MYSQL_DSN: mysql://root:remit@127.0.0.1:3306/remit
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo test -p remit-read -p remit-policy --features remit-read/mysql --locked
+
+  lint:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with: { components: "clippy,rustfmt" }
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo fmt --all -- --check
+      - run: cargo clippy --workspace --all-targets --locked -- -D warnings
+      - name: Advisories (patch SLA for critical ones is 24 h)
+        run: cargo install cargo-audit --locked && python3 scripts/audit-dependencies.py
+
+  msrv:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
+        with: { toolchain: "1.98" }
+      - run: rm rust-toolchain.toml && cargo check --workspace --locked
+
+  sdks:
+    strategy:
+      matrix:
+        node: [20, 22, 24]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "${{ matrix.node }}" }
+      - uses: dtolnay/rust-toolchain@stable
+        with: { targets: "wasm32-unknown-unknown" }
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo install wasm-bindgen-cli --version 0.2.122 --locked
+      - run: scripts/build-verifier.sh && scripts/build-engine.sh js && cargo build -p bitsinfra-remit --locked
+      - run: cd sdk/ts && npm ci && npx tsc --noEmit -p . && npm run build
+      - name: TS tests (sources run directly on Node ≥ 22.18)
+        if: matrix.node >= 22
+        run: cd sdk/ts && REMIT_BIN=$PWD/../../target/debug/remit npm test
+      - name: Built package on Node 20
+        if: matrix.node == 20
+        run: cd sdk/ts && node -e "import('./dist/src/index.js').then(m => { if (m.localVerifier().kind !== 'wasm') process.exit(1) })"
+      - name: Cloudflare edge Holder under workerd
+        if: matrix.node == 24
+        run: cd backends/cloudflare && npm ci && npm test && npm run check:package
+      - run: cd sdk/python && PYTHONPATH=. python3 tests/test_core.py && REMIT_BIN=$PWD/../../target/debug/remit PYTHONPATH=. python3 tests/test_live.py
+      - run: cd sdk/go && go vet ./... && go test ./...
+      - name: Vectors are reproducible from the TS oracle
+        if: matrix.node == 24
+        run: node scripts/gen-conformance.ts && git diff --exit-code spec/conformance
+
+  remitbench:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 24 }
+      - uses: dtolnay/rust-toolchain@stable
+        with: { targets: "wasm32-wasip2,wasm32-unknown-unknown" }
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo install wasm-bindgen-cli --version 0.2.122 --locked
+      - run: scripts/build-engine.sh all && scripts/build-verifier.sh && cargo build --release -p bitsinfra-remit --locked
+      - run: cd sdk/ts && npm ci
+      - run: node bench/remitbench/run.ts --spawn --quiet --require-parity
+      - name: Adversarial track (injection exposure 0, exfiltration beyond capacity 0)
+        run: node bench/remitbench/adversarial.ts
+
+  fuzz:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@nightly
+      - uses: Swatinem/rust-cache@v2
+        with: { workspaces: fuzz }
+      - run: cargo install cargo-fuzz --locked
+      - name: Fuzz every target (60 s per push, 20 min nightly)
+        run: |
+          rm -f rust-toolchain.toml
+          t=$([ "${{ github.event_name }}" = schedule ] && echo 1200 || echo 60)
+          cd fuzz && for f in fuzz_targets/*.rs; do
+            cargo +nightly fuzz run "$(basename "${f%.rs}")" -- -max_total_time=$t -rss_limit_mb=4096
+          done
+
+  perf:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: dtolnay/rust-toolchain@stable
+        with: { targets: "wasm32-wasip2" }
+      - uses: Swatinem/rust-cache@v2
+      - run: sudo apt-get update && sudo apt-get install -y valgrind
+      - run: cargo install iai-callgrind-runner --version "$(cargo metadata --format-version 1 --all-features | jq -r '.packages[]|select(.name=="iai-callgrind").version')" --locked
+      - run: scripts/build-engine.sh js
+      - name: End-to-end performance targets
+        run: cargo build --release -p bitsinfra-remit --locked && ./target/release/remit bench --json | tee bench.json
+      - name: Instruction counts; > 5 % regression on admission or instantiate fails the build
+        run: |
+          base=$(git merge-base origin/${{ github.base_ref || 'main' }} HEAD)
+          git worktree add ../base "$base"
+          mkdir -p ../base/engines/js/dist && cp engines/js/dist/*.wasm ../base/engines/js/dist/
+          export CARGO_TARGET_DIR=$PWD/target
+          cargo run --release -p remit-bench --features callgrind --example warm_engine_cache
+          (cd ../base && cargo bench -p remit-bench --features callgrind --bench instructions -- --save-baseline=base) || echo "no baseline benchmark"
+          cargo bench -p remit-bench --features callgrind --bench instructions -- --baseline=base --callgrind-limits='ir=5%'
+
+  formal:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Machine-checked capacity and accounting proofs (SMT)
+        run: sudo apt-get install -y z3 && scripts/prove.sh
+      - name: Lean model (proofs + oracle)
+        run: |
+          curl -sSfL https://elan.lean-lang.org/elan-init.sh | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          (cd formal/lean && "$HOME/.elan/bin/lake" build && ! grep -rnE "sorry|^axiom" RemitModel)
+      - uses: dtolnay/rust-toolchain@stable
+        with: { targets: "wasm32-wasip2" }
+      - run: scripts/build-engine.sh all
+      - name: Rust against the Lean model
+        run: REMIT_REQUIRE_LEAN=1 cargo test -p remit-types -p remit-policy --test lean --locked && REMIT_REQUIRE_LEAN=1 cargo test -p remit-holder --test e2e admission_order --locked

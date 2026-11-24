@@ -1,0 +1,40 @@
+[project]
+name = "remit"
+version = "0.1.0"
+description = "Remit Sender SDK for Python: typed remits, local checks, DSSE signing, verified receipts"
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+requires-python = ">=3.10"
+dependencies = []
+keywords = ["remit", "agents", "ai-agents", "mcp", "privacy", "sandbox", "receipts"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Security",
+    "Topic :: Software Development :: Libraries",
+    "Typing :: Typed",
+]
+
+[project.optional-dependencies]
+fast = ["cryptography>=42"]
+native = ["remit-native>=0.1,<0.2"]
+
+[project.urls]
+Homepage = "https://github.com/bitsinfra/remit"
+Source = "https://github.com/bitsinfra/remit/tree/main/sdk/python"
+Issues = "https://github.com/bitsinfra/remit/issues"
+Specification = "https://github.com/bitsinfra/remit/tree/main/spec"
+
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["remit"]
+
+[tool.setuptools.package-data]
+remit = ["py.typed"]

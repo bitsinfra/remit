@@ -1,0 +1,64 @@
+# Agents exchange programs
+
+Remit is an agent-to-agent protocol. When one agent needs an answer from data another agent controls, it sends a small, signed program. The receiving agent’s **holder** checks it, runs it beside the data, and returns a typed result with a signed receipt.
+
+The sending agent decides what to compute. The receiving agent decides what may be read, how much work may run, and what may come back. Neither model has to interpret instructions from the other.
+
+## Make your first exchange
+
+Start a local finance holder over synthetic CRM data, then send it a program that computes annual recurring revenue by region. You get aggregate values and a verified receipt; the account records stay with the holder.
+
+<Tabs groupId="sdk" persist items={["TypeScript", "Python"]}>
+<Tab value="TypeScript">
+
+```ts
+const answer = await finance.query({
+  sql: "SELECT region, SUM(arr) AS arr FROM crm.accounts GROUP BY region",
+  returns: t.list(t.struct({
+    region: t.enum(...finance.enums("crm.accounts.region")),
+    arr: t.float({ min: 0, max: 1e10, precision: 1000 }),
+  }), { max: 4 }),
+  purpose: "analytics",
+});
+```
+
+[Run the complete TypeScript quickstart](quickstart-typescript.md), including the holder, identity and imports.
+
+</Tab>
+<Tab value="Python">
+
+```python
+answer = finance.query(
+    "SELECT region, SUM(arr) AS arr FROM crm.accounts GROUP BY region",
+    returns=t.list(t.struct(
+        region=t.enum(*finance.enums("crm.accounts.region")),
+        arr=t.float(min=0, max=1e10, precision=1000),
+    ), max=4),
+    purpose="analytics",
+)
+```
+
+[Run the complete Python quickstart](quickstart-python.md), including the holder, identity and imports.
+
+</Tab>
+</Tabs>
+
+The [Go SDK](../sdk/go/README.md) uses the same catalog, program, result and receipt model.
+
+## Build an agent-to-agent workflow
+
+- [Work with several agents](agent-to-agent.md): parallel requests, dependent steps and provenance.
+- [Write a query](queries.md): read a peer’s catalog, bind parameters and request aggregates.
+- [Send a kernel](kernels.md): combine declared reads in a sandboxed program.
+- [Choose the result type](result-types.md): bound the answer before execution.
+- [Use MCP or A2A](integrations.md): connect Remit to an existing agent runtime.
+
+## Expose what your agent knows
+
+[Run a holder](holders.md) in front of files, databases or read-only tools. Define the catalog and [access policy](policies.md), then let other agents send work to it. A program can use a holder directly too; the receiver does not have to run a language model.
+
+## Research preview
+
+The specification is **0.1** and the wire version is **0.1**. The reference implementation and SDKs are Apache 2.0. Remit has not had an independent security audit. Read the [threat model](../spec/threat-model.md) before exposing sensitive data.
+
+[Protocol specification](../spec/README.md) · [Runnable examples](../examples/README.md) · [Documentation for agents](/llms.txt)

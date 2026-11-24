@@ -1,0 +1,59 @@
+[package]
+name = "remit-holder"
+description = "Remit Holder: admission pipeline, HTTP API, MCP and A2A bindings"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+homepage.workspace = true
+readme = "README.md"
+keywords = ["remit", "agents", "mcp", "a2a", "sandbox"]
+categories = ["web-programming::http-server"]
+
+[features]
+default = []
+duckdb = ["remit-read/duckdb"]
+mysql = ["remit-read/mysql"]
+object-store = ["remit-read/object-store"]
+tantivy = ["remit-read/tantivy"]
+lance = ["remit-read/lance"]
+
+[dependencies]
+remit-types = { workspace = true }
+remit-wire = { workspace = true, features = ["crypto"] }
+remit-sql = { workspace = true }
+remit-analyze = { workspace = true }
+remit-policy = { workspace = true }
+remit-read = { workspace = true }
+remit-kernel = { workspace = true }
+remit-emit = { workspace = true }
+remit-receipt = { workspace = true }
+datafusion = { workspace = true }
+biscuit-auth = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+anyhow = { workspace = true }
+tokio = { workspace = true }
+axum = { workspace = true }
+futures = { workspace = true }
+tracing = { workspace = true }
+toml = { workspace = true }
+parking_lot = { workspace = true }
+lru = { workspace = true }
+glob = { workspace = true }
+chrono = { workspace = true }
+rand = { workspace = true }
+base64 = { workspace = true }
+async-trait = "0.1"
+reqwest = { workspace = true }
+prost = "0.14"
+http-body = "1"
+
+[dev-dependencies]
+tower = { workspace = true, features = ["util"] }
+http-body-util = "0.1"
+reqwest = { workspace = true, features = ["http2"] }
+
+[lints]
+workspace = true

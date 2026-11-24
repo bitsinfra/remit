@@ -1,0 +1,29 @@
+[package]
+name = "remit-engine-js"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "Holder-hosted JS engine component for Remit kernels (Boa interpreter, remit:kernel world)"
+publish = false
+
+# Built separately for wasm32-wasip2 (see scripts/build-engine.sh); not a workspace member.
+[workspace]
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+wit-bindgen = "0.63"
+boa_engine = { version = "0.22", default-features = false }
+arrow-ipc = { version = "59", default-features = false }
+arrow-array = { version = "59", default-features = false }
+arrow-schema = { version = "59", default-features = false }
+ciborium = "0.2"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
+debug = false

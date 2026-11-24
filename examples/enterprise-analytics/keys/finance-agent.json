@@ -1,0 +1,6 @@
+{
+  "id": "did:web:finance-agent.acme.example",
+  "key_id": "did:web:finance-agent.acme.example#z6MkvEAATPLGbSDgqXwccC9PMc4JxrroQNJc4zTat1NEWqCo",
+  "secret_key": "oKANtSMnIjukbXmMu1QzOIbIxLYLMu5jJDVwSmMpb90=",
+  "public_key": "did:key:z6MkvEAATPLGbSDgqXwccC9PMc4JxrroQNJc4zTat1NEWqCo"
+}
