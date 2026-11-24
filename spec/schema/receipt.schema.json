@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/bitsinfra/remit/main/spec/schema/receipt.schema.json",
+  "title": "Remit receipt v0.1 (DSSE payload application/vnd.remit.receipt+json)",
+  "type": "object",
+  "required": ["run_id", "remit_id", "sender", "holder", "decision", "policy_sha256", "status", "labels", "terms", "charged", "runtime", "ts"],
+  "properties": {
+    "run_id": { "type": "string" },
+    "remit_id": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "params_sha256": { "type": "string" },
+    "sender": { "type": "string" },
+    "holder": { "type": "string" },
+    "decision": { "enum": ["admitted", "rejected", "pending_approval", "counter_offer"] },
+    "policy_sha256": { "type": "string" },
+    "catalog_sha256": { "type": "string" },
+    "data_versions": { "type": "object", "additionalProperties": { "type": "string" } },
+    "result_sha256": { "type": "string" },
+    "result_bits_max": { "type": "integer" },
+    "status": { "enum": ["ok", "limit_exceeded", "type_violation", "denied", "internal"] },
+    "labels": { "type": "array", "items": { "type": "string" } },
+    "terms": { "type": "object", "properties": { "retain_days": { "type": "integer" }, "forward": { "type": "boolean" } } },
+    "usage": { "type": "object", "additionalProperties": { "type": "string" } },
+    "charged": { "type": "object", "properties": { "bits": { "type": "integer" }, "epsilon": { "type": "number" } } },
+    "runtime": { "type": "object" },
+    "cached": { "type": "boolean" },
+    "execution": { "type": "object", "required": ["issued_at", "nonce"], "properties": { "issued_at": { "type": "string", "format": "date-time" }, "nonce": { "type": "string" } } },
+    "attestation": {},
+    "ts": { "type": "string", "format": "date-time" }
+  }
+}

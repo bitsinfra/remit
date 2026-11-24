@@ -1,0 +1,33 @@
+[package]
+name = "remit-policy"
+description = "Remit policy: Cedar over analyzer facts, presets, Biscuit authority, budget ledgers"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+homepage.workspace = true
+readme = "README.md"
+keywords = ["remit", "cedar", "biscuit", "policy", "budget"]
+categories = ["authentication"]
+
+[dependencies]
+remit-analyze = { workspace = true }
+remit-read = { workspace = true }
+cedar-policy = { workspace = true }
+biscuit-auth = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+parking_lot = { workspace = true }
+sha2 = { workspace = true }
+hex = { workspace = true }
+chrono = { workspace = true }
+tokio = { workspace = true }
+tokio-postgres = "0.7"
+
+[dev-dependencies]
+proptest = { workspace = true }
+
+[lints]
+workspace = true

@@ -1,0 +1,542 @@
+{
+  "valid": [
+    {
+      "name": "bool",
+      "returns": "bool",
+      "params": {},
+      "bits": 1,
+      "bits_ceil": 1
+    },
+    {
+      "name": "int-small",
+      "returns": {
+        "int": {
+          "min": 0,
+          "max": 255
+        }
+      },
+      "params": {},
+      "bits": 8,
+      "bits_ceil": 8
+    },
+    {
+      "name": "int-neg",
+      "returns": {
+        "int": {
+          "min": -1000,
+          "max": 1000
+        }
+      },
+      "params": {},
+      "bits": 10.966505,
+      "bits_ceil": 11
+    },
+    {
+      "name": "int-param",
+      "returns": {
+        "int": {
+          "min": 0,
+          "max": "$n"
+        }
+      },
+      "params": {
+        "from": "2026-11-24T00:00:00Z",
+        "until": "2026-12-08T00:00:00Z",
+        "minutes": 120,
+        "n": 7
+      },
+      "bits": 3,
+      "bits_ceil": 3
+    },
+    {
+      "name": "float-precision",
+      "returns": {
+        "float": {
+          "min": 0,
+          "max": 1,
+          "precision": 0.01
+        }
+      },
+      "params": {},
+      "bits": 6.658211,
+      "bits_ceil": 7
+    },
+    {
+      "name": "date-dst",
+      "returns": {
+        "date": {
+          "min": "2026-03-08",
+          "max": "2026-03-09"
+        }
+      },
+      "params": {},
+      "bits": 1,
+      "bits_ceil": 1
+    },
+    {
+      "name": "date-bound-granularity",
+      "returns": {
+        "date": {
+          "min": "2026-01-01",
+          "max": "2026-01-08",
+          "granularity": "$grid"
+        }
+      },
+      "params": {
+        "grid": "1d"
+      },
+      "bits": 3,
+      "bits_ceil": 3
+    },
+    {
+      "name": "decimal-midpoint",
+      "returns": {
+        "decimal": {
+          "min": 0,
+          "max": 0.5,
+          "scale": 0
+        }
+      },
+      "params": {},
+      "bits": 1,
+      "bits_ceil": 1
+    },
+    {
+      "name": "float-null-precision",
+      "returns": {
+        "float": {
+          "min": 0,
+          "max": 1,
+          "precision": null
+        }
+      },
+      "params": {},
+      "bits": 64,
+      "bits_ceil": 64
+    },
+    {
+      "name": "float-unquantized",
+      "returns": {
+        "float": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "params": {},
+      "bits": 64,
+      "bits_ceil": 64
+    },
+    {
+      "name": "decimal",
+      "returns": {
+        "decimal": {
+          "scale": 2,
+          "min": 0,
+          "max": 1000
+        }
+      },
+      "params": {},
+      "bits": 16.609655,
+      "bits_ceil": 17
+    },
+    {
+      "name": "enum-3",
+      "returns": {
+        "enum": [
+          "EMEA",
+          "AMER",
+          "APAC"
+        ]
+      },
+      "params": {},
+      "bits": 1.584963,
+      "bits_ceil": 2
+    },
+    {
+      "name": "enum-1",
+      "returns": {
+        "enum": [
+          "only"
+        ]
+      },
+      "params": {},
+      "bits": 0,
+      "bits_ceil": 0
+    },
+    {
+      "name": "string-digits",
+      "returns": {
+        "string": {
+          "max_len": 4,
+          "charset": "digits"
+        }
+      },
+      "params": {},
+      "bits": 15.60964,
+      "bits_ceil": 16
+    },
+    {
+      "name": "string-hex-mixed-case",
+      "returns": {
+        "string": {
+          "max_len": 24,
+          "charset": "hex"
+        }
+      },
+      "params": {},
+      "bits": 111.670215,
+      "bits_ceil": 112
+    },
+    {
+      "name": "string-base64-alphabets",
+      "returns": {
+        "string": {
+          "max_len": 512,
+          "charset": "base64"
+        }
+      },
+      "params": {},
+      "bits": 3114.840481,
+      "bits_ceil": 3115
+    },
+    {
+      "name": "string-unicode",
+      "returns": {
+        "string": {
+          "max_len": 16
+        }
+      },
+      "params": {},
+      "bits": 325.444397,
+      "bits_ceil": 326
+    },
+    {
+      "name": "timestamp-15m-2w",
+      "returns": {
+        "timestamp": {
+          "min": "$from",
+          "max": "$until",
+          "granularity": "15m"
+        }
+      },
+      "params": {
+        "from": "2026-11-24T00:00:00Z",
+        "until": "2026-12-08T00:00:00Z",
+        "minutes": 120,
+        "n": 7
+      },
+      "bits": 10.39339,
+      "bits_ceil": 11
+    },
+    {
+      "name": "timestamp-1h",
+      "returns": {
+        "timestamp": {
+          "min": "2026-01-01T00:00:00Z",
+          "max": "2026-01-02T00:00:00Z",
+          "granularity": "1h"
+        }
+      },
+      "params": {},
+      "bits": 4.643856,
+      "bits_ceil": 5
+    },
+    {
+      "name": "date-7d",
+      "returns": {
+        "date": {
+          "min": "2026-01-01",
+          "max": "2026-12-31",
+          "granularity": "7d"
+        }
+      },
+      "params": {},
+      "bits": 5.72792,
+      "bits_ceil": 6
+    },
+    {
+      "name": "bytes-16",
+      "returns": {
+        "bytes": {
+          "max_len": 16
+        }
+      },
+      "params": {},
+      "bits": 132.087463,
+      "bits_ceil": 133
+    },
+    {
+      "name": "optional-bool",
+      "returns": {
+        "optional": "bool"
+      },
+      "params": {},
+      "bits": 1.584963,
+      "bits_ceil": 2
+    },
+    {
+      "name": "list-3-bool",
+      "returns": {
+        "list": {
+          "max": 3,
+          "of": "bool"
+        }
+      },
+      "params": {},
+      "bits": 5,
+      "bits_ceil": 5
+    },
+    {
+      "name": "struct",
+      "returns": {
+        "struct": {
+          "a": "bool",
+          "b": {
+            "int": {
+              "min": 0,
+              "max": 3
+            }
+          }
+        }
+      },
+      "params": {},
+      "bits": 3,
+      "bits_ceil": 3
+    },
+    {
+      "name": "plan-free-slots",
+      "returns": {
+        "list": {
+          "max": 3,
+          "of": {
+            "struct": {
+              "start": {
+                "timestamp": {
+                  "min": "$from",
+                  "max": "$until",
+                  "granularity": "15m"
+                }
+              },
+              "end": {
+                "timestamp": {
+                  "min": "$from",
+                  "max": "$until",
+                  "granularity": "15m"
+                }
+              }
+            }
+          }
+        }
+      },
+      "params": {
+        "from": "2026-11-24T00:00:00Z",
+        "until": "2026-12-08T00:00:00Z",
+        "minutes": 120,
+        "n": 7
+      },
+      "bits": 64.360343,
+      "bits_ceil": 65
+    },
+    {
+      "name": "table",
+      "returns": {
+        "table": {
+          "max_rows": 20,
+          "of": {
+            "struct": {
+              "region": {
+                "enum": [
+                  "EMEA",
+                  "AMER",
+                  "APAC"
+                ]
+              },
+              "arr": {
+                "float": {
+                  "min": 0,
+                  "max": 1000000000,
+                  "precision": 1000
+                }
+              }
+            }
+          }
+        }
+      },
+      "params": {},
+      "bits": 434.722968,
+      "bits_ceil": 435
+    },
+    {
+      "name": "nested-optional-list",
+      "returns": {
+        "list": {
+          "max": 5,
+          "of": {
+            "optional": {
+              "int": {
+                "min": 0,
+                "max": 99
+              }
+            }
+          }
+        }
+      },
+      "params": {},
+      "bits": 35.87602,
+      "bits_ceil": 36
+    }
+  ],
+  "invalid": [
+    {
+      "name": "string-unbounded",
+      "returns": {
+        "string": {}
+      },
+      "code": "RMT-E0101",
+      "path": "/string/max_len"
+    },
+    {
+      "name": "list-unbounded",
+      "returns": {
+        "list": {
+          "of": "bool"
+        }
+      },
+      "code": "RMT-E0101",
+      "path": "/list/max"
+    },
+    {
+      "name": "bare-int",
+      "returns": "int",
+      "code": "RMT-E0101"
+    },
+    {
+      "name": "unknown",
+      "returns": {
+        "wat": {}
+      },
+      "code": "RMT-E0102"
+    },
+    {
+      "name": "unresolved-param",
+      "returns": {
+        "int": {
+          "min": 0,
+          "max": "$nope"
+        }
+      },
+      "code": "RMT-E0104"
+    },
+    {
+      "name": "unknown-charset",
+      "returns": {
+        "string": {
+          "max_len": 2,
+          "charset": "upper"
+        }
+      },
+      "code": "RMT-E0103",
+      "path": "/string/charset"
+    },
+    {
+      "name": "timestamp-overflow",
+      "returns": {
+        "timestamp": {
+          "min": -9000000000000000000,
+          "max": 9000000000000000000,
+          "granularity": 1
+        }
+      },
+      "code": "RMT-E0103"
+    },
+    {
+      "name": "zero-granularity",
+      "returns": {
+        "timestamp": {
+          "min": 0,
+          "max": 10,
+          "granularity": 0
+        }
+      },
+      "code": "RMT-E0107"
+    },
+    {
+      "name": "negative-max",
+      "returns": {
+        "list": {
+          "max": -1,
+          "of": "bool"
+        }
+      },
+      "code": "RMT-E0103"
+    },
+    {
+      "name": "huge-list",
+      "returns": {
+        "list": {
+          "max": 16777217,
+          "of": "bool"
+        }
+      },
+      "code": "RMT-E0106"
+    },
+    {
+      "name": "duplicate-enum",
+      "returns": {
+        "enum": [
+          "a",
+          "a"
+        ]
+      },
+      "code": "RMT-E0103"
+    },
+    {
+      "name": "empty-enum",
+      "returns": {
+        "enum": []
+      },
+      "code": "RMT-E0106"
+    },
+    {
+      "name": "bad-day",
+      "returns": {
+        "date": {
+          "min": "2026-02-30",
+          "max": "2026-03-01"
+        }
+      },
+      "code": "RMT-E0103"
+    },
+    {
+      "name": "zero-precision",
+      "returns": {
+        "float": {
+          "min": 0,
+          "max": 1,
+          "precision": 0
+        }
+      },
+      "code": "RMT-E0103"
+    },
+    {
+      "name": "table-of-scalar",
+      "returns": {
+        "table": {
+          "max_rows": 2,
+          "of": "bool"
+        }
+      },
+      "code": "RMT-E0103"
+    },
+    {
+      "name": "empty-range",
+      "returns": {
+        "int": {
+          "min": 5,
+          "max": 1
+        }
+      },
+      "code": "RMT-E0105"
+    }
+  ]
+}

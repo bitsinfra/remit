@@ -1,0 +1,12 @@
+{
+  "remit": "0.1",
+  "purpose": "analytics",
+  "mode": "query",
+  "reads": { "q": { "sql": "SELECT region, SUM(arr) AS arr, COUNT(*) AS accounts FROM crm.accounts GROUP BY region ORDER BY region", "max_rows": 10 } },
+  "params": {},
+  "returns": { "list": { "max": 10, "of": { "struct": {
+    "region": { "enum": ["AMER", "APAC", "EMEA", "LATAM"] },
+    "arr": { "float": { "min": 0, "max": 1e10, "precision": 1000 } },
+    "accounts": { "int": { "min": 0, "max": 100000 } }
+  } } } }
+}

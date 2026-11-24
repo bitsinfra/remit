@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Remit Playground</title>
+<meta name="theme-color" content="#ffffff">
+<link rel="preload" href="/playground/fonts/petrona-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/playground/fonts/geist.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+  @font-face { font-family:Petrona; src:url('/playground/fonts/petrona-latin.woff2') format('woff2'); font-style:normal; font-weight:400; font-display:swap; }
+  @font-face { font-family:Geist; src:url('/playground/fonts/geist.woff2') format('woff2'); font-style:normal; font-weight:100 900; font-display:swap; }
+  @font-face { font-family:'Geist Mono'; src:url('/playground/fonts/geist-mono.woff2') format('woff2'); font-style:normal; font-weight:100 900; font-display:swap; }
+  :root { --bg:#fff; --fg:#1d1c21; --muted:#6e6e74; --card:#fff; --line:#ececef; --accent:#17324d; --bad:#a13c36; --ok:#245d4b; --display:Petrona,Georgia,'Times New Roman',serif; --sans:Geist,ui-sans-serif,system-ui,-apple-system,sans-serif; --mono:'Geist Mono',ui-monospace,SFMono-Regular,Menlo,monospace; color-scheme:light; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:14px/1.45 var(--sans); -webkit-font-smoothing:antialiased; }
+  header { padding:16px 20px; border-bottom:1px solid var(--line); display:flex; gap:12px; align-items:baseline; flex-wrap:wrap; }
+  header h1 { font:400 22px/1.2 var(--display); letter-spacing:-.02em; margin:0; }
+  header span { color:var(--muted); font-size:13px; }
+  main { display:grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap:16px; padding:16px 20px; }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; padding:16px; } }
+  section { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:14px; min-width:0; }
+  h2 { font:400 18px/1.2 var(--display); letter-spacing:-.02em; color:var(--fg); margin:0 0 10px; }
+  textarea { width:100%; min-height:420px; font:12.5px/1.4 var(--mono); background:#fafafb; color:var(--fg); border:1px solid var(--line); border-radius:6px; padding:10px; resize:vertical; }
+  .row { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; align-items:center; }
+  button { border:1px solid var(--accent); background:var(--accent); color:var(--bg); padding:7px 14px; border-radius:6px; font:500 14px var(--sans); cursor:pointer; }
+  button.secondary { background:transparent; color:var(--accent); }
+  select { font:14px var(--sans); background:var(--card); color:var(--fg); border:1px solid var(--line); border-radius:6px; padding:6px; max-width:100%; }
+  .decision { font-size:18px; font-weight:650; margin-bottom:8px; }
+  .decision.ok { color:var(--ok); } .decision.bad { color:var(--bad); }
+  table { border-collapse:collapse; width:100%; font-size:13px; }
+  td, th { text-align:left; padding:4px 6px; border-bottom:1px solid var(--line); vertical-align:top; }
+  code, pre { font-family:var(--mono); font-size:12px; }
+  pre { white-space:pre-wrap; word-break:break-word; margin:0; }
+  .bar { height:10px; background:var(--accent); border-radius:2px; min-width:2px; }
+  .muted { color:var(--muted); }
+  .kv { display:grid; grid-template-columns: max-content 1fr; gap:4px 12px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Remit Playground</h1>
+  <span id="holder">loading catalog…</span>
+  <span id="who"></span>
+</header>
+<main>
+  <section>
+    <h2>Remit (manifest)</h2>
+    <div class="row" style="margin:0 0 8px"><select id="examples"></select></div>
+    <textarea id="manifest" spellcheck="false"></textarea>
+    <div class="row">
+      <button id="check">Check</button>
+      <button id="run" class="secondary">Run</button>
+      <span class="muted">Signed in the browser with an ephemeral did:key.</span>
+    </div>
+  </section>
+  <section>
+    <h2>Admission</h2>
+    <div id="out" class="muted">Check a remit to see its decision, diagnostics, access card, capacity and per-stage timing.</div>
+  </section>
+</main>
+<script type="module">
+const $ = (id) => document.getElementById(id);
+const B58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+const b58 = (bytes) => { let n = 0n; for (const b of bytes) n = (n << 8n) | BigInt(b); let s = ""; while (n > 0n) { s = B58[Number(n % 58n)] + s; n /= 58n; } for (const b of bytes) { if (b) break; s = "1" + s; } return s; };
+const canon = (v) => v === null ? "null" : typeof v === "number" ? (Object.is(v, -0) ? "0" : String(v)) : typeof v === "string" || typeof v === "boolean" ? JSON.stringify(v)
+  : Array.isArray(v) ? "[" + v.map(canon).join(",") + "]" : "{" + Object.keys(v).filter(k => v[k] !== undefined).sort().map(k => JSON.stringify(k) + ":" + canon(v[k])).join(",") + "}";
+const enc = new TextEncoder();
+const b64 = (u8) => btoa(String.fromCharCode(...u8));
+const hex = (buf) => [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("");
+let key, did;
+async function identity() {
+  key = await crypto.subtle.generateKey({ name: "Ed25519" }, false, ["sign"]);
+  const raw = new Uint8Array(await crypto.subtle.exportKey("raw", key.publicKey));
+  did = "did:key:z" + b58(new Uint8Array([0xed, 0x01, ...raw]));
+  $("who").textContent = "as " + did.slice(0, 24) + "…";
+}
+let catalog;
+async function load() {
+  catalog = await (await fetch("/.well-known/remit")).json();
+  $("holder").textContent = catalog.holder + " · " + catalog.resources.length + " resources · " + catalog.catalog_sha256.slice(0, 19) + "…";
+  const ex = catalog.examples ?? [];
+  $("examples").innerHTML = ex.map((e, i) => `<option value="${i}">${e.title}</option>`).join("") || "<option>(no examples)</option>";
+  $("examples").onchange = () => { $("manifest").value = JSON.stringify(ex[$("examples").value].manifest, null, 2); };
+  if (ex.length) $("manifest").value = JSON.stringify(ex[0].manifest, null, 2);
+}
+async function envelope() {
+  const m = JSON.parse($("manifest").value);
+  const now = new Date(); const iso = d => d.toISOString().replace(/\.\d{3}Z$/, "Z");
+  Object.assign(m, { remit: m.remit ?? "0.1", sender: did, holder: catalog.holder, issued_at: iso(now), expires_at: iso(new Date(+now + 300000)), nonce: crypto.randomUUID().replaceAll("-", "") });
+  m.limits ??= {}; m.purpose ??= catalog.purposes?.[0] ?? "unspecified";
+  for (const r of Object.values(m.reads)) r.max_calls ??= 1;
+  if (m.code?.source) m.code.source_sha256 = hex(await crypto.subtle.digest("SHA-256", enc.encode(m.code.source)));
+  const body = enc.encode(canon(m));
+  const type = "application/vnd.remit.manifest+json";
+  const pae = enc.encode(`DSSEv1 ${type.length} ${type} ${body.length} `);
+  const msg = new Uint8Array([...pae, ...body]);
+  const sig = new Uint8Array(await crypto.subtle.sign({ name: "Ed25519" }, key.privateKey, msg));
+  return { payloadType: type, payload: b64(body), signatures: [{ keyid: did, sig: b64(sig) }] };
+}
+const esc = (s) => String(s ?? "").replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c]);
+function render(v) {
+  const ok = v.decision === "admitted" || v.status === "ok";
+  let h = `<div class="decision ${ok ? "ok" : "bad"}">${esc(v.status ?? v.decision)}</div>`;
+  if (v.facts) h += `<div class="kv"><span class="muted">result bits</span><b>${v.facts.result_bits}</b><span class="muted">capacity</span><span>${v.facts.capacity_bits} bits</span><span class="muted">aggregate-only</span><span>${v.facts.aggregate_only}</span><span class="muted">permitted by</span><span>${esc((v.permitted_by ?? []).join(", "))}</span></div>`;
+  if (v.diagnostics?.length) h += `<h2 style="margin-top:14px">Diagnostics</h2><table>${v.diagnostics.map(d => `<tr><td><code>${esc(d.code)}</code></td><td><code>${esc(d.path)}</code>${d.span ? ` <span class="muted">(${d.span.join(":")})</span>` : ""}</td><td>${esc(d.message)}${d.hint ? `<div class="muted">${esc(d.hint)}</div>` : ""}</td></tr>`).join("")}</table>`;
+  if (v.trace?.length) { const max = Math.max(...v.trace.map(t => t.us), 1); h += `<h2 style="margin-top:14px">Admission trace</h2><table>${v.trace.map(t => `<tr><td>${t.stage}</td><td style="width:60%"><div class="bar" style="width:${(t.us / max) * 100}%"></div></td><td>${t.us} µs</td></tr>`).join("")}</table>`; }
+  if (v.access_card) h += `<h2 style="margin-top:14px">Access card</h2><pre>${esc(JSON.stringify(v.access_card, null, 2))}</pre>`;
+  if (v.result !== undefined) h += `<h2 style="margin-top:14px">Result</h2><pre>${esc(JSON.stringify(v.result, null, 2))}</pre><h2 style="margin-top:14px">Labels / terms / usage</h2><pre>${esc(JSON.stringify({ labels: v.labels, terms: v.terms, usage: v.usage, cached: v.cached }, null, 2))}</pre>`;
+  if (v.log) h += `<h2 style="margin-top:14px">Kernel log (dev only)</h2><pre>${esc(v.log)}</pre>`;
+  $("out").className = ""; $("out").innerHTML = h;
+}
+async function submit(action) {
+  try {
+    const env = await envelope();
+    const r = await fetch(`/remit/v1/${action}`, { method: "POST", headers: { "content-type": "application/vnd.remit.envelope+json" }, body: JSON.stringify(env) });
+    render(await r.json());
+  } catch (e) { $("out").innerHTML = `<div class="decision bad">error</div><pre>${esc(e.message)}</pre>`; }
+}
+$("check").onclick = () => submit("check");
+$("run").onclick = () => submit("run");
+await identity(); await load();
+</script>
+</body>
+</html>

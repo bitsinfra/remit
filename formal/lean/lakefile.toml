@@ -1,0 +1,9 @@
+name = "remit_model"
+defaultTargets = ["RemitModel", "oracle"]
+
+[[lean_lib]]
+name = "RemitModel"
+
+[[lean_exe]]
+name = "oracle"
+root = "Oracle"

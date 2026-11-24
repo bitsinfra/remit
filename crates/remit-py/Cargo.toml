@@ -1,0 +1,20 @@
+[package]
+name = "remit-py"
+description = "PyO3 bindings: the Rust verifier core (JCS, remit_id, capacity, validation, SQL profile) for the Python SDK"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+publish = false
+
+[workspace]
+
+[lib]
+name = "remit_native"
+crate-type = ["cdylib"]
+
+[dependencies]
+remit-verify-wasm = { path = "../remit-verify-wasm" }
+remit-types = { path = "../remit-types" }
+remit-wire = { path = "../remit-wire", default-features = false }
+remit-sql = { path = "../remit-sql" }
+pyo3 = { version = "0.30", features = ["extension-module", "abi3-py310"] }

@@ -1,0 +1,6 @@
+{
+  "id": "did:web:support-agent.example",
+  "key_id": "did:web:support-agent.example#z6MkgyreijLRCoKTBAfV9UvNjPzUiF8Rc9VR6Cf9zBrkaV4Y",
+  "secret_key": "lBpTMWjN8hUrm25vbXkgezJ7KsZ44kSAdxAoawzYueU=",
+  "public_key": "did:key:z6MkgyreijLRCoKTBAfV9UvNjPzUiF8Rc9VR6Cf9zBrkaV4Y"
+}

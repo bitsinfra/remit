@@ -1,0 +1,66 @@
+package remit:kernel@0.1.0;
+
+/// Data access. Only reads declared in the manifest exist.
+interface data {
+  enum error-code { row-cap, call-cap, param-type, denied, internal }
+
+  resource table {
+    /// Arrow IPC stream containing only the schema message.
+    schema: func() -> list<u8>;
+    /// Next Arrow IPC record batch (stream format, schema-less framing), or none at end.
+    next-batch: func() -> option<list<u8>>;
+    num-rows: func() -> u64;
+  }
+
+  resource read {
+    /// CBOR-encoded params map, typed by the manifest's read template.
+    call: func(params: list<u8>) -> result<table, error-code>;
+  }
+
+  /// Names of the reads declared in the manifest (lets engines build the
+  /// `reads` object without a Proxy).
+  declared: func() -> list<string>;
+
+  /// Unknown names return none: an undeclared read is indistinguishable from a
+  /// nonexistent one.
+  bind: func(name: string) -> option<read>;
+}
+
+interface holder-fns {
+  use data.{error-code};
+  /// Holder-provided pure functions (embed, geocode, fx-rate…), priced in fuel.
+  /// Args and results are CBOR.
+  call: func(name: string, args: list<u8>) -> result<list<u8>, error-code>;
+}
+
+/// The world every Remit kernel engine component targets. The Holder links
+/// exactly these imports plus deterministic stubs for the engine's init-time
+/// WASI needs (frozen clock, nonce-seeded PRNG, empty environment). Nothing
+/// else (network, filesystem, real clocks) is linked, so it does not exist.
+world kernel {
+  import data;
+  import holder-fns;
+
+  /// Initialize the engine (realm, prelude) before any Sender
+  /// input exists, so Holders can keep a pool of pre-initialized, never-reused
+  /// instances. Calling `load` without `init` initializes implicitly.
+  export init: func() -> result<_, string>;
+
+  /// For Holder-hosted interpreters: hand the engine the Sender's
+  /// source. Error detail stays Holder-side; the Sender sees only a status.
+  export load: func(source: string, entry: string) -> result<_, string>;
+
+  /// CBOR params in, CBOR result out. The host validates the result against
+  /// the declared Remit Type. Error is a status code (see spec/status.md).
+  export run: func(params: list<u8>) -> result<list<u8>, u32>;
+}
+
+/// Sender-built components (`lang = "wasm/component"`). Same imports
+/// as engines, a single `run` export, compiled only by the Holder with the
+/// restricted engine after structural validation. Precompiled artifacts are
+/// never accepted.
+world sender-kernel {
+  import data;
+  import holder-fns;
+  export run: func(params: list<u8>) -> result<list<u8>, u32>;
+}

@@ -1,0 +1,100 @@
+name: ci
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions: { contents: read }
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+# Push/PR checks run in parallel with a five-minute budget per job.
+# Full runtime, integration, platform and adversarial suites remain available
+# in extended-validation.yml; release builds have their own workflow.
+jobs:
+  docs:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "24", cache: npm, cache-dependency-path: docs/package-lock.json }
+      - run: npm ci --prefix docs --no-audit --no-fund
+      - run: npm run build --prefix docs
+
+  rust-protocol:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with: { components: "clippy,rustfmt" }
+      - uses: Swatinem/rust-cache@v2
+        with: { key: fast-protocol-v1, cache-on-failure: true }
+      - name: Format every Rust crate
+        run: cargo fmt --all -- --check
+      - name: Types, wire signatures, SQL and receipts
+        run: >-
+          cargo test --locked --config 'profile.dev.package."*".opt-level=0'
+          -p remit-types -p remit-wire -p remit-sql -p remit-receipt
+      - name: Protocol lints
+        run: >-
+          cargo clippy --locked --all-targets --config 'profile.dev.package."*".opt-level=0'
+          -p remit-types -p remit-wire -p remit-sql -p remit-receipt -- -D warnings
+
+  typescript:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      CARGO_PROFILE_WASM_OPT_LEVEL: "0"
+      CARGO_PROFILE_WASM_LTO: "false"
+      CARGO_PROFILE_WASM_CODEGEN_UNITS: "16"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "24", cache: npm, cache-dependency-path: sdk/ts/package-lock.json }
+      - uses: dtolnay/rust-toolchain@stable
+        with: { targets: wasm32-unknown-unknown }
+      - uses: Swatinem/rust-cache@v2
+        with: { key: fast-verifier-v1, cache-on-failure: true }
+      - name: Install the pinned wasm-bindgen binary
+        working-directory: ${{ runner.temp }}
+        run: |
+          archive=wasm-bindgen-0.2.122-x86_64-unknown-linux-musl
+          curl --fail --silent --show-error --location --retry 3 \
+            "https://github.com/wasm-bindgen/wasm-bindgen/releases/download/0.2.122/$archive.tar.gz" -o "$archive.tar.gz"
+          echo "122a3fe2ea9c6e3e89b50e42dd1a346e499f3f65a54aae0b4eaeb658139d1e0e  $archive.tar.gz" | sha256sum --check
+          tar -xzf "$archive.tar.gz"
+          echo "$RUNNER_TEMP/$archive" >> "$GITHUB_PATH"
+      - name: Build the verifier from this checkout
+        run: scripts/build-verifier.sh
+      - name: Typecheck and build the SDK
+        working-directory: sdk/ts
+        run: npm ci --no-audit --no-fund && npm run typecheck && npm run build
+      - name: SDK, browser, CLI and Rust/Wasm parity tests
+        working-directory: sdk/ts
+        run: node --test test/core.test.ts test/client.test.ts test/cli.test.ts test/browser.test.ts
+      - name: Reproduce conformance vectors
+        run: node scripts/gen-conformance.ts && git diff --exit-code spec/conformance
+
+  python-go:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13" }
+      - uses: actions/setup-go@v5
+        with: { go-version-file: sdk/go/go.mod, cache: false }
+      - name: Python conformance and signatures
+        working-directory: sdk/python
+        run: PYTHONPATH=. python3 tests/test_core.py
+      - name: Go vet and tests
+        working-directory: sdk/go
+        run: go vet ./... && go test ./...

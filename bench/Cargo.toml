@@ -1,0 +1,43 @@
+[package]
+name = "remit-bench"
+description = "Micro-benchmarks (criterion) for the admission path"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish = false
+
+[dependencies]
+remit-types = { workspace = true }
+remit-wire = { workspace = true, features = ["crypto"] }
+remit-sql = { workspace = true }
+remit-analyze = { workspace = true }
+remit-policy = { workspace = true }
+remit-read = { workspace = true }
+serde_json = { workspace = true }
+remit-kernel = { workspace = true, optional = true }
+tokio = { workspace = true, optional = true }
+iai-callgrind = { version = "0.16", optional = true }
+
+[features]
+callgrind = ["dep:iai-callgrind", "dep:remit-kernel", "dep:tokio"]
+
+[dev-dependencies]
+criterion = { workspace = true }
+
+[[bench]]
+name = "admission"
+harness = false
+
+[[bench]]
+name = "instructions"
+harness = false
+required-features = ["callgrind"]
+
+[lints]
+workspace = true
+
+[[example]]
+name = "warm_engine_cache"
+required-features = ["callgrind"]

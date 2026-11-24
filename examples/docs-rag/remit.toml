@@ -1,0 +1,51 @@
+# Docs RAG: a support agent retrieves the few passages it needs ("search then
+# fetch" inside one remit) instead of crawling the knowledge base. Author
+# emails and internal notes never leave; at most 3 passages of ≤ 160 chars do.
+
+[holder]
+id = "did:web:docs.corp.example"
+listen = "127.0.0.1:8446"
+isolation = "process"
+identity = "keys/holder.json"            # demo key
+data_dir = ".remit-holder"
+
+[[source]]
+name = "docs"
+kind = "csv"
+path = "data/chunks.csv"
+table = "chunks"
+
+[catalog."docs.chunks"]
+description = "Help-center passages. Searchable with fts('kb', $q, k)."
+labels = ["internal"]
+operations = ["read", "search"]
+purposes = ["support"]
+max_bits = 4096
+
+[catalog."docs.chunks".columns]
+author_email   = { expose = false }
+internal_notes = { expose = false }
+doc            = { enum = true }
+
+[[index]]
+name = "kb"
+kind = "fulltext"
+table = "docs.chunks"
+id_column = "chunk_id"
+text_column = "body"
+
+[policy]
+presets = ["personal-vault"]
+
+[budgets]
+bits_per_principal_per_day = 65536
+bits_global_per_day = 262144
+
+[runtime]
+engine = "../../engines/js/dist/remit_engine_js.wasm"
+
+[[principal]]
+id = "did:web:support-agent.example"
+keys = ["did:key:z6MkgyreijLRCoKTBAfV9UvNjPzUiF8Rc9VR6Cf9zBrkaV4Y"]
+groups = ["verified-agents"]
+verified = true

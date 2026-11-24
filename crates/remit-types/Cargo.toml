@@ -1,0 +1,26 @@
+[package]
+name = "remit-types"
+description = "Remit Types (RT): bounded result types, capacity in bits, validator and trusted transforms"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+homepage.workspace = true
+readme = "README.md"
+keywords = ["remit", "agents", "types", "information-flow", "privacy"]
+categories = ["data-structures", "encoding"]
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+chrono = { workspace = true }
+regex = { workspace = true }
+base64 = { workspace = true }
+
+[dev-dependencies]
+proptest = { workspace = true }
+
+[lints]
+workspace = true

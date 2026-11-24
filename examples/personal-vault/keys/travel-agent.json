@@ -1,0 +1,6 @@
+{
+  "id": "did:web:travel-agent.example",
+  "key_id": "did:web:travel-agent.example#z6MkrJ8EXRcfvCV1GnCUbQd1QEfp7TtQU4SsFiBKujXsn7Mo",
+  "secret_key": "AEVRuDDlamGVrCcohirWrvaypm6tVblbUaavcS0H11M=",
+  "public_key": "did:key:z6MkrJ8EXRcfvCV1GnCUbQd1QEfp7TtQU4SsFiBKujXsn7Mo"
+}

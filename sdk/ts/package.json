@@ -1,0 +1,75 @@
+{
+  "name": "remit-protocol",
+  "version": "0.1.0",
+  "description": "Remit Sender SDK: write SQL/TS remits against typed catalogs, verify locally, sign, submit, get typed results with receipts",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bitsinfra/remit.git",
+    "directory": "sdk/ts"
+  },
+  "homepage": "https://github.com/bitsinfra/remit/tree/main/sdk/ts#readme",
+  "bugs": {
+    "url": "https://github.com/bitsinfra/remit/issues"
+  },
+  "keywords": [
+    "remit",
+    "agents",
+    "ai-agents",
+    "mcp",
+    "sandbox",
+    "privacy",
+    "differential-privacy",
+    "wasm",
+    "receipts"
+  ],
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "exports": {
+    ".": {
+      "development": "./src/index.ts",
+      "types": "./dist/src/index.d.ts",
+      "default": "./dist/src/index.js"
+    },
+    "./mcp": {
+      "development": "./src/mcp.ts",
+      "types": "./dist/src/mcp.d.ts",
+      "default": "./dist/src/mcp.js"
+    },
+    "./browser": {
+      "development": "./src/browser.ts",
+      "types": "./dist/src/browser.d.ts",
+      "default": "./dist/src/browser.js"
+    },
+    "./verify-wasm": "./wasm/remit_verify_wasm.js"
+  },
+  "bin": {
+    "remit-ts": "dist/bin/remit-ts.js",
+    "remit-mcp": "dist/bin/remit-mcp.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "test": "node --test test/*.test.ts",
+    "typecheck": "tsc --noEmit -p .",
+    "prepack": "node --input-type=commonjs -e \"require('node:fs').accessSync('wasm/remit_verify_wasm_bg.wasm'); require('node:fs').cpSync('../skill', 'skill', { recursive: true })\" && npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "zod": "^4.2.0"
+  },
+  "files": [
+    "dist",
+    "src",
+    "wasm",
+    "skill"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3"
+  }
+}

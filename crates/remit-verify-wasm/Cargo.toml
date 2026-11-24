@@ -1,0 +1,25 @@
+[package]
+name = "remit-verify-wasm"
+description = "The Holder's verifier compiled to Wasm for SDKs (canonicalization, remit_id, RT capacity/validation, Remit SQL profile)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+homepage.workspace = true
+readme = "README.md"
+keywords = ["remit", "wasm", "verifier"]
+categories = ["wasm"]
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+remit-types = { workspace = true }
+remit-wire = { workspace = true }
+remit-sql = { workspace = true }
+serde_json = { workspace = true }
+wasm-bindgen = "=0.2.122"
+
+[lints]
+workspace = true

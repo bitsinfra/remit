@@ -1,0 +1,48 @@
+# B2B overlap: Company A learns how many of its customers Company B also has.
+# B's customer list never leaves B; A's list is sent as a param and only a
+# bounded count (≤ 14 bits) comes back.
+
+[holder]
+id = "did:web:company-b.example"
+listen = "127.0.0.1:8445"
+isolation = "process"
+identity = "keys/holder.json"            # demo key
+data_dir = ".remit-holder"
+
+[[source]]
+name = "crm"
+kind = "csv"
+path = "data/customers.csv"
+table = "customers"
+
+[catalog."crm.customers"]
+description = "Customers. Only SHA-256 of normalized email and country are visible to overlap kernels."
+labels = ["confidential", "no-forward"]
+purposes = ["overlap"]
+max_bits = 32
+operations = ["read"]
+pad_ms = 50
+
+[catalog."crm.customers".columns]
+customer_id    = { expose = false }
+email          = { expose = false }
+lifetime_value = { expose = false }
+country        = { enum = true }
+
+[policy]
+files = ["policies/*.cedar"]
+
+[budgets]
+bits_per_principal_per_day = 256          # a handful of overlap questions per day
+bits_global_per_day = 2048
+
+[runtime]
+engine = "../../engines/js/dist/remit_engine_js.wasm"
+max_rows_per_read = 10000
+
+[[principal]]
+id = "did:web:company-a.example"
+keys = ["did:key:z6Mkmk6gcYNuM58SLbQWca1dFaoN7WdVJtEfVeUvKJC7QtkM"]
+groups = ["partners"]
+org = "company-a.example"
+verified = true

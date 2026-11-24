@@ -1,0 +1,25 @@
+{
+  "remit": "0.1",
+  "purpose": "scheduling",
+  "mode": "query",
+  "reads": {
+    "q": {
+      "sql": "SELECT COUNT(*) AS busy FROM calendar.events WHERE start_at < $until AND end_at > $from AND status <> 'cancelled'",
+      "params": {
+        "from": "timestamp",
+        "until": "timestamp"
+      },
+      "max_rows": 1
+    }
+  },
+  "params": {
+    "from": "2026-11-24T00:00:00Z",
+    "until": "2026-11-25T00:00:00Z"
+  },
+  "returns": {
+    "int": {
+      "min": 0,
+      "max": 64
+    }
+  }
+}

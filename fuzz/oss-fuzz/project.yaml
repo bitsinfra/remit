@@ -1,0 +1,8 @@
+homepage: "https://github.com/bitsinfra/remit"
+language: rust
+# Set primary_contact to the security contact's email before submitting to google/oss-fuzz.
+primary_contact: ""
+main_repo: "https://github.com/bitsinfra/remit"
+sanitizers: [address]
+fuzzing_engines: [libfuzzer]
+architectures: [x86_64]

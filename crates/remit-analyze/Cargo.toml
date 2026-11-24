@@ -1,0 +1,33 @@
+[package]
+name = "remit-analyze"
+description = "Remit analyzer: derives policy facts (columns, ops, aggregate-only, k, bits, cost) and LLM-actionable diagnostics"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+homepage.workspace = true
+readme = "README.md"
+keywords = ["remit", "static-analysis", "policy", "sql"]
+categories = ["development-tools"]
+
+[dependencies]
+remit-types = { workspace = true }
+remit-wire = { workspace = true }
+remit-sql = { workspace = true }
+remit-read = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+oxc_parser = "0.159"
+oxc_allocator = "0.159"
+oxc_ast = "0.159"
+oxc_span = "0.159"
+oxc_syntax = "0.159"
+
+[dev-dependencies]
+tokio = { workspace = true }
+datafusion = { workspace = true }
+
+[lints]
+workspace = true

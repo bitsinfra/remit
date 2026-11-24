@@ -1,0 +1,16 @@
+{
+  "remit": "0.1",
+  "purpose": "forecasting",
+  "mode": "kernel",
+  "reads": {
+    "won":  { "sql": "SELECT a.segment AS segment, COUNT(*) AS n, COUNT(DISTINCT d.account_id) AS accts FROM crm.deals d JOIN crm.accounts a ON a.account_id = d.account_id WHERE d.stage = 'won' AND d.closed_at >= $since GROUP BY a.segment", "params": { "since": "timestamp" }, "max_rows": 10 },
+    "all":  { "sql": "SELECT a.segment AS segment, COUNT(*) AS n, COUNT(DISTINCT d.account_id) AS accts FROM crm.deals d JOIN crm.accounts a ON a.account_id = d.account_id WHERE d.stage <> 'open' AND d.closed_at >= $since GROUP BY a.segment", "params": { "since": "timestamp" }, "max_rows": 10 }
+  },
+  "code": { "lang": "js/es2023", "entry": "main", "source": "export default function main({ won, all }, p) {\n  const w = new Map(won(p).rows().map(r => [r.segment, r.n]));\n  return all(p).rows().map(r => ({ segment: r.segment, win_rate: (w.get(r.segment) ?? 0) / r.n })).sort((a, b) => b.win_rate - a.win_rate);\n}\n" },
+  "params": { "since": "2025-06-01T00:00:00Z" },
+  "limits": { "fuel": 20000000, "wall_ms": 500 },
+  "returns": { "list": { "max": 3, "of": { "struct": {
+    "segment": { "enum": ["smb", "mid", "enterprise"] },
+    "win_rate": { "float": { "min": 0, "max": 1, "precision": 0.01 } }
+  } } } }
+}

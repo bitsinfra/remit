@@ -1,0 +1,115 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/remit-types",
+    "crates/remit-wire",
+    "crates/remit-sql",
+    "crates/remit-read",
+    "crates/remit-kernel",
+    "crates/remit-guest",
+    "crates/remit-analyze",
+    "crates/remit-policy",
+    "crates/remit-emit",
+    "crates/remit-receipt",
+    "crates/remit-holder",
+    "crates/remit-cli",
+    "crates/remit-verify-wasm",
+    "bench",
+]
+exclude = ["engines/js", "engines/python", "fuzz", "crates/remit-py"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+rust-version = "1.98"
+repository = "https://github.com/bitsinfra/remit"
+homepage = "https://github.com/bitsinfra/remit"
+
+[workspace.dependencies]
+remit-types = { version = "0.1.0", path = "crates/remit-types" }
+remit-wire = { version = "0.1.0", path = "crates/remit-wire", default-features = false }
+remit-sql = { version = "0.1.0", path = "crates/remit-sql" }
+remit-analyze = { version = "0.1.0", path = "crates/remit-analyze" }
+remit-policy = { version = "0.1.0", path = "crates/remit-policy" }
+remit-read = { version = "0.1.0", path = "crates/remit-read" }
+remit-kernel = { version = "0.1.0", path = "crates/remit-kernel" }
+remit-emit = { version = "0.1.0", path = "crates/remit-emit" }
+remit-receipt = { version = "0.1.0", path = "crates/remit-receipt" }
+remit-holder = { version = "0.1.0", path = "crates/remit-holder" }
+
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order", "float_roundtrip"] }
+thiserror = "2"
+anyhow = "1"
+sha2 = "0.10"
+hex = "0.4"
+base64 = "0.22"
+ed25519-dalek = { version = "2.2", features = ["rand_core", "pkcs8"] }
+p256 = { version = "0.14", features = ["ecdsa"] }
+rand = "0.8"
+rand_chacha = "0.3"
+bs58 = "0.5"
+chrono = { version = "0.4", default-features = false, features = ["std", "clock"] }
+regex = "1"
+ryu-js = "1"
+ciborium = "0.2"
+toml = "0.8"
+tokio = { version = "1", features = ["full"] }
+axum = { version = "0.8", features = ["http2"] }
+tower = "0.5"
+futures = "0.3"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+clap = { version = "4", features = ["derive", "env"] }
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+datafusion = "55.3"
+sqlparser = { version = "0.62", features = ["visitor"] }
+cedar-policy = "4.15"
+biscuit-auth = "=7.0.0-alpha.4"
+wasmtime = { version = "=48.0.10", default-features = false, features = ["component-model", "async", "pooling-allocator", "cranelift", "runtime", "std", "parallel-compilation", "addr2line", "anyhow", "reexport-wasmparser"] }
+wasmtime-wasi = { version = "=48.0.10", default-features = false, features = ["p2"] }
+wasmtime-wasi-io = "=48.0.10"
+rusqlite = { version = "0.41", features = ["bundled", "column_decltype"] }
+parking_lot = "0.12"
+proptest = "1"
+criterion = { version = "0.5", default-features = false, features = ["cargo_bench_support"] }
+glob = "0.3"
+once_cell = "1"
+lru = "0.12"
+
+[workspace.lints.clippy]
+# Diagnostics are large by design; tuple-heavy internals are local.
+result_large_err = "allow"
+type_complexity = "allow"
+should_implement_trait = "allow"
+
+[profile.release]
+debug = 1
+lto = "thin"
+codegen-units = 4
+
+# Security-relevant arithmetic must never wrap silently.
+[profile.release.package.remit-types]
+overflow-checks = true
+[profile.release.package.remit-policy]
+overflow-checks = true
+[profile.release.package.remit-emit]
+overflow-checks = true
+[profile.release.package.remit-analyze]
+overflow-checks = true
+
+[profile.wasm]
+inherits = "release"
+debug = false
+strip = true
+opt-level = "s"
+lto = "fat"
+codegen-units = 1
+
+[profile.dev]
+debug = "line-tables-only"
+
+[profile.dev.package."*"]
+debug = false
+opt-level = 2

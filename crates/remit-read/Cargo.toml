@@ -1,0 +1,60 @@
+[package]
+name = "remit-read"
+description = "Remit read plane: DataFusion integration, policy views, k-thresholds, limits, snapshot pinning"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+homepage.workspace = true
+readme = "README.md"
+keywords = ["remit", "datafusion", "privacy", "differential-privacy"]
+categories = ["database"]
+
+[dependencies]
+remit-types = { workspace = true }
+remit-wire = { workspace = true }
+remit-sql = { workspace = true }
+datafusion = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+tokio = { workspace = true }
+futures = { workspace = true }
+sha2 = { workspace = true }
+hex = { workspace = true }
+glob = { workspace = true }
+rusqlite = { workspace = true }
+parking_lot = { workspace = true }
+chrono = { workspace = true }
+async-trait = "0.1"
+tokio-postgres = { version = "0.7", features = ["with-chrono-0_4"] }
+duckdb = { version = "1.20001", features = ["bundled"], optional = true }
+apache-avro = { version = "0.20", default-features = false, features = ["snappy"] }
+tantivy = { version = "0.27", default-features = false, features = ["mmap", "stemmer"], optional = true }
+lance = { version = "14", default-features = false, optional = true }
+# Lance is on an older Arrow than DataFusion; batches cross over as IPC.
+arrow-ipc-lance = { package = "arrow-ipc", version = "58", optional = true }
+object_store = { version = "0.14", default-features = false, features = ["aws", "gcp", "azure"], optional = true }
+mysql_async = { version = "0.36", default-features = false, features = ["minimal-rust", "rustls-tls"], optional = true }
+arrow60-ipc = { package = "arrow-ipc", version = "60", optional = true }
+
+[features]
+default = []
+# Native DuckDB-file backend (bundled C++ build).
+duckdb = ["dep:duckdb", "dep:arrow60-ipc"]
+# Full-text indexes scored by Tantivy.
+tantivy = ["dep:tantivy"]
+# LanceDB / Lance datasets.
+lance = ["dep:lance", "dep:arrow-ipc-lance"]
+# s3:// gs:// az:// paths for every file-based source.
+object-store = ["dep:object_store"]
+# MySQL / MariaDB backend.
+mysql = ["dep:mysql_async"]
+
+[dev-dependencies]
+proptest = { workspace = true }
+
+[lints]
+workspace = true

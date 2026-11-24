@@ -1,0 +1,6 @@
+{
+  "id": "did:web:alice.vault.example",
+  "key_id": "did:web:alice.vault.example#z6MkiYxSgcqD5sNBi54jBGqCVoDmMXxBM5zrGZw1JYqkotm3",
+  "secret_key": "cQcO/zvsUL9By/MNMvIfVd1JaC4qrLYp4Pxrt9Y9Yck=",
+  "public_key": "did:key:z6MkiYxSgcqD5sNBi54jBGqCVoDmMXxBM5zrGZw1JYqkotm3"
+}

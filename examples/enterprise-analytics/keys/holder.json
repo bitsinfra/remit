@@ -1,0 +1,6 @@
+{
+  "id": "did:web:hr-data.acme.example",
+  "key_id": "did:web:hr-data.acme.example#z6MkkTqZv7s6XuTL24mMacqkb31dLLq65uf5NEYyGtF3xsYR",
+  "secret_key": "OaURZ5mf0uTscUiQu2lV7gWYTcu1EDAkSmYt2j+Q5Nk=",
+  "public_key": "did:key:z6MkkTqZv7s6XuTL24mMacqkb31dLLq65uf5NEYyGtF3xsYR"
+}

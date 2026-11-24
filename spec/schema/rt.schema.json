@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/bitsinfra/remit/main/spec/schema/rt.schema.json",
+  "title": "Remit Type (wire form) — or a JSON Schema document per rt.md",
+  "$defs": {
+    "bound": { "oneOf": [{ "type": "number" }, { "type": "string" }] },
+    "rt": {
+      "oneOf": [
+        { "const": "bool" },
+        { "type": "object", "required": ["bool"], "additionalProperties": false, "properties": { "bool": { "type": "object" } } },
+        { "type": "object", "required": ["int"], "additionalProperties": false, "properties": { "int": { "type": "object", "required": ["min", "max"], "properties": { "min": { "$ref": "#/$defs/bound" }, "max": { "$ref": "#/$defs/bound" } } } } },
+        { "type": "object", "required": ["float"], "additionalProperties": false, "properties": { "float": { "type": "object", "required": ["min", "max"], "properties": { "min": { "$ref": "#/$defs/bound" }, "max": { "$ref": "#/$defs/bound" }, "precision": { "$ref": "#/$defs/bound" } } } } },
+        { "type": "object", "required": ["decimal"], "additionalProperties": false, "properties": { "decimal": { "type": "object", "required": ["scale", "min", "max"] } } },
+        { "type": "object", "required": ["enum"], "additionalProperties": false, "properties": { "enum": { "oneOf": [{ "type": "array", "items": { "type": "string" }, "minItems": 1, "maxItems": 65536, "uniqueItems": true }, { "type": "object", "required": ["values"] }] } } },
+        { "type": "object", "required": ["string"], "additionalProperties": false, "properties": { "string": { "type": "object", "required": ["max_len"], "properties": { "max_len": { "$ref": "#/$defs/bound" }, "charset": { "enum": ["digits", "hex", "alpha", "alnum", "base64", "ascii", "unicode"] }, "pattern": { "type": "string" } } } } },
+        { "type": "object", "required": ["timestamp"], "additionalProperties": false, "properties": { "timestamp": { "type": "object", "required": ["min", "max", "granularity"] } } },
+        { "type": "object", "required": ["date"], "additionalProperties": false, "properties": { "date": { "type": "object", "required": ["min", "max"] } } },
+        { "type": "object", "required": ["bytes"], "additionalProperties": false, "properties": { "bytes": { "type": "object", "required": ["max_len"] } } },
+        { "type": "object", "required": ["list"], "additionalProperties": false, "properties": { "list": { "type": "object", "required": ["max", "of"], "properties": { "max": { "$ref": "#/$defs/bound" }, "of": { "$ref": "#/$defs/rt" } } } } },
+        { "type": "object", "required": ["table"], "additionalProperties": false, "properties": { "table": { "type": "object", "required": ["max_rows", "of"], "properties": { "max_rows": { "$ref": "#/$defs/bound" }, "of": { "$ref": "#/$defs/rt" } } } } },
+        { "type": "object", "required": ["struct"], "additionalProperties": false, "properties": { "struct": { "type": "object", "additionalProperties": { "$ref": "#/$defs/rt" } } } },
+        { "type": "object", "required": ["optional"], "additionalProperties": false, "properties": { "optional": { "$ref": "#/$defs/rt" } } }
+      ]
+    }
+  },
+  "anyOf": [{ "$ref": "#/$defs/rt" }, { "type": "object", "description": "JSON Schema 2020-12 with x-remit-* bounds" }]
+}
